@@ -2,6 +2,12 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { errorHandler } from './middleware/errorHandler.js';
+import settingsRouter from './routes/settings.route.js';
+import categoriesRouter from './routes/categories.route.js';
+import accountsRouter from './routes/accounts.route.js';
+import transactionsRouter from './routes/transactions.route.js';
+import statsRouter from './routes/stats.route.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -13,6 +19,14 @@ app.use(express.json());
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+app.use('/settings', settingsRouter);
+app.use('/categories', categoriesRouter);
+app.use('/accounts', accountsRouter);
+app.use('/transactions', transactionsRouter);
+app.use('/stats', statsRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
