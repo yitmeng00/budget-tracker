@@ -1,7 +1,14 @@
 export type Tab = 'transactions' | 'stats' | 'accounts' | 'settings';
 export type TxView = 'daily' | 'calendar' | 'monthly';
 export type UnitPosition = 'prefix' | 'suffix';
-export type WeekDay = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
+export type WeekDay =
+  | 'Sunday'
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday';
 
 export interface Category {
   id: number;
