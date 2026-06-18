@@ -40,7 +40,7 @@ function AppShell() {
         />
 
         <div className="flex-1 overflow-auto px-[34px] pt-[10px] pb-[44px]">
-          {tab === 'transactions' && <TransactionsPage />}
+          {tab === 'transactions' && <TransactionsPage settings={settings} />}
           {tab === 'stats' && <StatsPage />}
           {tab === 'accounts' && <AccountsPage />}
           {tab === 'settings' && <SettingsPage />}
