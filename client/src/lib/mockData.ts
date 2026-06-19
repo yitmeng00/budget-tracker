@@ -105,6 +105,33 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
   },
 ];
 
+export interface CalendarDayData {
+  income: number;
+  expense: number; // negative number
+}
+
+export const MOCK_CALENDAR: Record<string, CalendarDayData> = {
+  '2026-06-01': { income: 0, expense: -45.5 },
+  '2026-06-02': { income: 0, expense: -28.9 },
+  '2026-06-03': { income: 0, expense: -110.0 },
+  '2026-06-04': { income: 0, expense: -15.0 },
+  '2026-06-05': { income: 0, expense: -55.3 },
+  '2026-06-06': { income: 0, expense: -220.0 },
+  '2026-06-07': { income: 0, expense: -88.5 },
+  '2026-06-08': { income: 0, expense: -22.0 },
+  '2026-06-09': { income: 0, expense: -35.0 },
+  '2026-06-10': { income: 0, expense: -18.5 },
+  '2026-06-11': { income: 0, expense: -145.0 },
+  '2026-06-12': { income: 0, expense: -67.9 },
+  '2026-06-13': { income: 0, expense: -190.0 },
+  '2026-06-14': { income: 0, expense: -45.0 },
+  '2026-06-15': { income: 800, expense: -32.0 },
+  '2026-06-16': { income: 5200, expense: -65.8 },
+  '2026-06-17': { income: 0, expense: -87.3 },
+  '2026-06-18': { income: 0, expense: -25.0 },
+  '2026-06-19': { income: 0, expense: -42.5 },
+};
+
 export const TX_VIEW_LABELS: Record<TxView, string> = {
   daily: 'Daily',
   calendar: 'Calendar',

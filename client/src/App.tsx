@@ -18,7 +18,7 @@ function AppShell() {
   const [tab, setTab] = useState<Tab>('transactions');
   const [showAddModal, setShowAddModal] = useState(false);
   const { settings } = useSettings();
-  const { label: monthLabel, prev, next } = useMonth();
+  const { year, month, label: monthLabel, prev, next } = useMonth();
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-bg text-text-primary">
@@ -40,7 +40,9 @@ function AppShell() {
         />
 
         <div className="flex-1 overflow-auto px-[34px] pt-[10px] pb-[44px]">
-          {tab === 'transactions' && <TransactionsPage settings={settings} />}
+          {tab === 'transactions' && (
+            <TransactionsPage year={year} month={month} settings={settings} />
+          )}
           {tab === 'stats' && <StatsPage />}
           {tab === 'accounts' && <AccountsPage />}
           {tab === 'settings' && <SettingsPage />}
