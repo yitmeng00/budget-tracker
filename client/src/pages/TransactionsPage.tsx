@@ -4,6 +4,7 @@ import SummaryCards from '../components/transactions/SummaryCards.tsx';
 import ViewSwitcher from '../components/transactions/ViewSwitcher.tsx';
 import DailyView from '../components/transactions/DailyView.tsx';
 import CalendarView from '../components/transactions/CalendarView.tsx';
+import MonthlyView from '../components/transactions/MonthlyView.tsx';
 
 interface Props {
   year: number;
@@ -23,7 +24,7 @@ export default function TransactionsPage({ year, month, settings }: Props) {
       {view === 'calendar' && (
         <CalendarView key={`${year}-${month}`} year={year} month={month} settings={settings} />
       )}
-      {view === 'monthly' && <div className="text-text-subtle p-2">Monthly — In Progress</div>}
+      {view === 'monthly' && <MonthlyView settings={settings} />}
     </div>
   );
 }

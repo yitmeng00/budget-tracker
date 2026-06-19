@@ -132,6 +132,26 @@ export const MOCK_CALENDAR: Record<string, CalendarDayData> = {
   '2026-06-19': { income: 0, expense: -42.5 },
 };
 
+export interface MonthlyCategoryItem {
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+  amount: number; // negative = expense, positive = income
+}
+
+// Expense totals sum to 3,860 and income to 5,200 — matching SummaryCards mock values
+export const MOCK_MONTHLY_CATEGORIES: MonthlyCategoryItem[] = [
+  { id: 1, name: 'Food & Dining', icon: 'utensils', color: '#7b5cf0', amount: -950.3 },
+  { id: 2, name: 'Shopping', icon: 'shopping-bag', color: '#f97316', amount: -850.0 },
+  { id: 3, name: 'Groceries', icon: 'shopping-cart', color: '#22c55e', amount: -680.8 },
+  { id: 4, name: 'Transport', icon: 'car', color: '#06b6d4', amount: -520.5 },
+  { id: 5, name: 'Entertainment', icon: 'clapperboard', color: '#f43f5e', amount: -320.4 },
+  { id: 6, name: 'Bills & Utilities', icon: 'receipt', color: '#64748b', amount: -280.0 },
+  { id: 7, name: 'Health', icon: 'heart-pulse', color: '#ec4899', amount: -258.0 },
+  { id: 8, name: 'Salary', icon: 'briefcase', color: '#16a34a', amount: 5200.0 },
+];
+
 export const TX_VIEW_LABELS: Record<TxView, string> = {
   daily: 'Daily',
   calendar: 'Calendar',
