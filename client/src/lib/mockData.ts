@@ -152,6 +152,21 @@ export const MOCK_MONTHLY_CATEGORIES: MonthlyCategoryItem[] = [
   { id: 8, name: 'Salary', icon: 'briefcase', color: '#16a34a', amount: 5200.0 },
 ];
 
+export interface MonthlyBarData {
+  month: string;
+  income: number;
+  expense: number;
+}
+
+export const MOCK_MONTHLY_BARS: MonthlyBarData[] = [
+  { month: 'Jan', income: 5200, expense: 3200 },
+  { month: 'Feb', income: 5200, expense: 2800 },
+  { month: 'Mar', income: 5200, expense: 4100 },
+  { month: 'Apr', income: 6000, expense: 3600 },
+  { month: 'May', income: 5200, expense: 3450 },
+  { month: 'Jun', income: 5200, expense: 3860 },
+];
+
 export const TX_VIEW_LABELS: Record<TxView, string> = {
   daily: 'Daily',
   calendar: 'Calendar',
