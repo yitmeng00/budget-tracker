@@ -6,6 +6,7 @@ import TransactionsPage from './pages/TransactionsPage.tsx';
 import StatsPage from './pages/StatsPage.tsx';
 import AccountsPage from './pages/AccountsPage.tsx';
 import SettingsPage from './pages/SettingsPage.tsx';
+import AddTransactionModal from './components/transactions/AddTransactionModal.tsx';
 import type { Tab } from './types/index.ts';
 import { useSettings } from './hooks/useSettings.ts';
 import { useMonth } from './hooks/useMonth.ts';
@@ -49,26 +50,8 @@ function AppShell() {
         </div>
       </main>
 
-      {/* Add transaction modal — implemented in PR 10 */}
       {showAddModal && (
-        <div
-          onClick={() => setShowAddModal(false)}
-          className="fixed inset-0 bg-[rgba(31,27,46,0.4)] flex items-center justify-center z-50"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-surface rounded-3xl p-8 min-w-100"
-          >
-            <p className="text-base font-bold mb-2">Add Transaction</p>
-            <p className="text-text-subtle text-sm">In Progress</p>
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="mt-4 px-5 py-2.5 rounded-xl border-0 bg-accent text-white cursor-pointer font-bold"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <AddTransactionModal onClose={() => setShowAddModal(false)} settings={settings} />
       )}
     </div>
   );
