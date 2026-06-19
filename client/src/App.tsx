@@ -44,7 +44,7 @@ function AppShell() {
             <TransactionsPage year={year} month={month} settings={settings} />
           )}
           {tab === 'stats' && <StatsPage settings={settings} />}
-          {tab === 'accounts' && <AccountsPage />}
+          {tab === 'accounts' && <AccountsPage settings={settings} />}
           {tab === 'settings' && <SettingsPage />}
         </div>
       </main>

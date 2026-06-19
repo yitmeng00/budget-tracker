@@ -1,3 +1,67 @@
-export default function AccountsPage() {
-  return <div className="text-text-subtle p-2">Accounts — In Progress</div>;
+import type { UserSettings } from '../types/index.ts';
+import { MOCK_ACCOUNTS } from '../lib/mockData.ts';
+import { getLucideIcon } from '../lib/icons.ts';
+import { formatMoney } from '../lib/currency.ts';
+
+interface Props {
+  settings: UserSettings;
+}
+
+export default function AccountsPage({ settings }: Props) {
+  const { currency_symbol: sym, unit_position: pos } = settings;
+
+  const netWorth = MOCK_ACCOUNTS.reduce((s, a) => s + a.balance, 0);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Net worth hero */}
+      <div className="rounded-[20px] p-7 text-white bg-[linear-gradient(150deg,#2563eb,#0ea5e9)] shadow-(--shadow-card)">
+        <div className="text-sm font-semibold opacity-80 mb-2">Net Worth</div>
+        <div className="text-3xl font-extrabold tabular-nums mb-3">
+          {formatMoney(netWorth, sym, pos)}
+        </div>
+        <div className="text-xs opacity-70">{MOCK_ACCOUNTS.length} accounts · June 2026</div>
+      </div>
+
+      {/* Account cards grid */}
+      <div className="grid grid-cols-2 gap-4">
+        {MOCK_ACCOUNTS.map((account) => {
+          const Icon = getLucideIcon(account.icon);
+          const isNegative = account.balance < 0;
+          const formattedBalance = isNegative
+            ? `- ${formatMoney(Math.abs(account.balance), sym, pos)}`
+            : formatMoney(account.balance, sym, pos);
+
+          return (
+            <div
+              key={account.id}
+              className="bg-surface border border-border rounded-[20px] shadow-(--shadow-card) p-5"
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <div
+                  className="w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0"
+                  style={{ background: `color-mix(in srgb, ${account.color} 14%, #ffffff)` }}
+                >
+                  <Icon size={17} style={{ color: account.color }} />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-text-primary truncate">{account.name}</div>
+                  <div className="text-xs text-text-muted">{account.type}</div>
+                </div>
+              </div>
+
+              <div
+                className={[
+                  'text-xl font-extrabold tabular-nums',
+                  isNegative ? 'text-expense' : 'text-text-primary',
+                ].join(' ')}
+              >
+                {formattedBalance}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }

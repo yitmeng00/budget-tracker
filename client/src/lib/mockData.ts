@@ -1,4 +1,4 @@
-import type { TxView } from '../types/index.ts';
+import type { Account, TxView } from '../types/index.ts';
 
 export interface RawTransaction {
   id: number;
@@ -165,6 +165,49 @@ export const MOCK_MONTHLY_BARS: MonthlyBarData[] = [
   { month: 'Apr', income: 6000, expense: 3600 },
   { month: 'May', income: 5200, expense: 3450 },
   { month: 'Jun', income: 5200, expense: 3860 },
+];
+
+export const MOCK_ACCOUNTS: Account[] = [
+  {
+    id: 1,
+    name: 'CIMB Current',
+    type: 'Current Account',
+    icon: 'landmark',
+    color: '#2563eb',
+    balance: 12450.0,
+  },
+  {
+    id: 2,
+    name: 'Maybank Savings',
+    type: 'Savings Account',
+    icon: 'piggy-bank',
+    color: '#16a34a',
+    balance: 8320.5,
+  },
+  {
+    id: 3,
+    name: "Touch 'n Go",
+    type: 'E-Wallet',
+    icon: 'wallet',
+    color: '#06b6d4',
+    balance: 285.4,
+  },
+  {
+    id: 4,
+    name: 'CIMB Visa',
+    type: 'Credit Card',
+    icon: 'credit-card',
+    color: '#ef4444',
+    balance: -1250.0,
+  },
+  {
+    id: 5,
+    name: 'Grab Wallet',
+    type: 'E-Wallet',
+    icon: 'smartphone',
+    color: '#22c55e',
+    balance: 45.0,
+  },
 ];
 
 export const TX_VIEW_LABELS: Record<TxView, string> = {
