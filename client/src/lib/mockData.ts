@@ -1,4 +1,4 @@
-import type { Account, TxView } from '../types/index.ts';
+import type { Account, Category, TxView } from '../types/index.ts';
 
 export interface RawTransaction {
   id: number;
@@ -208,6 +208,20 @@ export const MOCK_ACCOUNTS: Account[] = [
     color: '#22c55e',
     balance: 45.0,
   },
+];
+
+export const MOCK_CATEGORIES: Category[] = [
+  { id: 1, name: 'Food & Dining', icon: 'utensils', color: '#7b5cf0', type: 'expense' },
+  { id: 2, name: 'Shopping', icon: 'shopping-bag', color: '#f97316', type: 'expense' },
+  { id: 3, name: 'Groceries', icon: 'shopping-cart', color: '#22c55e', type: 'expense' },
+  { id: 4, name: 'Transport', icon: 'car', color: '#06b6d4', type: 'expense' },
+  { id: 5, name: 'Entertainment', icon: 'clapperboard', color: '#f43f5e', type: 'expense' },
+  { id: 6, name: 'Bills & Utilities', icon: 'receipt', color: '#64748b', type: 'expense' },
+  { id: 7, name: 'Health', icon: 'heart-pulse', color: '#ec4899', type: 'expense' },
+  { id: 8, name: 'Fuel', icon: 'fuel', color: '#f59e0b', type: 'expense' },
+  { id: 9, name: 'Salary', icon: 'briefcase', color: '#16a34a', type: 'income' },
+  { id: 10, name: 'Freelance', icon: 'laptop', color: '#2563eb', type: 'income' },
+  { id: 11, name: 'Investment', icon: 'trending-up', color: '#0ea5e9', type: 'income' },
 ];
 
 export const TX_VIEW_LABELS: Record<TxView, string> = {

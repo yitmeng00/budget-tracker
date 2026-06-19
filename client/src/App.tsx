@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 function AppShell() {
   const [tab, setTab] = useState<Tab>('transactions');
   const [showAddModal, setShowAddModal] = useState(false);
-  const { settings } = useSettings();
+  const { settings, update } = useSettings();
   const { year, month, label: monthLabel, prev, next } = useMonth();
 
   return (
@@ -45,7 +45,7 @@ function AppShell() {
           )}
           {tab === 'stats' && <StatsPage settings={settings} />}
           {tab === 'accounts' && <AccountsPage settings={settings} />}
-          {tab === 'settings' && <SettingsPage />}
+          {tab === 'settings' && <SettingsPage settings={settings} onUpdate={update} />}
         </div>
       </main>
 
