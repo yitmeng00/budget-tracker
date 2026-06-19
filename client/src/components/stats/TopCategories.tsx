@@ -1,7 +1,17 @@
 import type { UserSettings } from '../../types/index.ts';
 import { MOCK_MONTHLY_CATEGORIES } from '../../lib/mockData.ts';
-import { getLucideIcon } from '../../lib/icons.ts';
 import { formatMoney } from '../../lib/currency.ts';
+
+const AUTO_COLORS = [
+  '#7b5cf0',
+  '#2563eb',
+  '#f97316',
+  '#06b6d4',
+  '#f43f5e',
+  '#ec4899',
+  '#f59e0b',
+  '#16a34a',
+];
 
 interface Props {
   settings: UserSettings;
@@ -21,18 +31,12 @@ export default function TopCategories({ settings }: Props) {
       <h3 className="text-sm font-extrabold text-text-primary mb-5">Top Categories</h3>
 
       <div className="flex flex-col gap-4">
-        {top5.map((cat) => {
-          const Icon = getLucideIcon(cat.icon);
+        {top5.map((cat, i) => {
           const pct = (Math.abs(cat.amount) / maxAbs) * 100;
+          const barColor = AUTO_COLORS[i % AUTO_COLORS.length];
           return (
             <div key={cat.id}>
-              <div className="flex items-center gap-3 mb-2">
-                <div
-                  className="w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0"
-                  style={{ background: `color-mix(in srgb, ${cat.color} 14%, #ffffff)` }}
-                >
-                  <Icon size={17} style={{ color: cat.color }} />
-                </div>
+              <div className="flex items-center gap-2 mb-2">
                 <span className="text-sm font-semibold text-text-primary flex-1 min-w-0 truncate">
                   {cat.name}
                 </span>
@@ -40,10 +44,10 @@ export default function TopCategories({ settings }: Props) {
                   {formatMoney(Math.abs(cat.amount), sym, pos)}
                 </span>
               </div>
-              <div className="ml-12 h-1.5 bg-border rounded-full overflow-hidden">
+              <div className="h-1.5 bg-border rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${pct}%`, background: cat.color }}
+                  style={{ width: `${pct}%`, background: barColor }}
                 />
               </div>
             </div>
