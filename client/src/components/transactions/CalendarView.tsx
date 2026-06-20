@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { UserSettings, WeekDay } from '../../types/index.ts';
-import { MOCK_CALENDAR } from '../../lib/mockData.ts';
+import type { CalendarDayData } from '../../lib/mockData.ts';
 import { formatMoney } from '../../lib/currency.ts';
 
 const ALL_DAYS: WeekDay[] = [
@@ -27,6 +27,7 @@ interface Props {
   year: number;
   month: number; // 0-indexed
   settings: UserSettings;
+  calendarData: Record<string, CalendarDayData>;
 }
 
 const buildGrid = (year: number, month: number, weekStart: WeekDay) => {
@@ -49,7 +50,7 @@ const buildGrid = (year: number, month: number, weekStart: WeekDay) => {
 const toDateKey = (year: number, month: number, day: number) =>
   `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-export default function CalendarView({ year, month, settings }: Props) {
+export default function CalendarView({ year, month, settings, calendarData }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
   const todayDate = new Date();
@@ -91,7 +92,7 @@ export default function CalendarView({ year, month, settings }: Props) {
             }
 
             const dateKey = toDateKey(year, month, day);
-            const data = MOCK_CALENDAR[dateKey];
+            const data = calendarData[dateKey];
             const isToday = day === todayDay;
             const isSelected = day === selectedDay;
 

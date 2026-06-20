@@ -1,21 +1,18 @@
 import type { UserSettings } from '../../types/index.ts';
-import { MOCK_MONTHLY_CATEGORIES } from '../../lib/mockData.ts';
+import type { MonthlyCategoryItem } from '../../lib/mockData.ts';
 import { getLucideIcon } from '../../lib/icons.ts';
 import { formatMoney } from '../../lib/currency.ts';
 
 interface Props {
+  categories: MonthlyCategoryItem[];
   settings: UserSettings;
 }
 
-export default function MonthlyView({ settings }: Props) {
+export default function MonthlyView({ categories, settings }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
-  const expenses = MOCK_MONTHLY_CATEGORIES.filter((c) => c.amount < 0).sort(
-    (a, b) => a.amount - b.amount,
-  );
-  const incomes = MOCK_MONTHLY_CATEGORIES.filter((c) => c.amount > 0).sort(
-    (a, b) => b.amount - a.amount,
-  );
+  const expenses = categories.filter((c) => c.amount < 0).sort((a, b) => a.amount - b.amount);
+  const incomes = categories.filter((c) => c.amount > 0).sort((a, b) => b.amount - a.amount);
 
   const totalExpense = expenses.reduce((s, c) => s + Math.abs(c.amount), 0);
   const maxExpense = Math.abs(expenses[0]?.amount ?? 1);

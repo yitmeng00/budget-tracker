@@ -44,7 +44,7 @@ function AppShell() {
           {tab === 'transactions' && (
             <TransactionsPage year={year} month={month} settings={settings} />
           )}
-          {tab === 'stats' && <StatsPage settings={settings} />}
+          {tab === 'stats' && <StatsPage year={year} month={month} settings={settings} />}
           {tab === 'accounts' && <AccountsPage settings={settings} />}
           {tab === 'settings' && <SettingsPage settings={settings} onUpdate={update} />}
         </div>

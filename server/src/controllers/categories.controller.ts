@@ -32,6 +32,26 @@ export const createCategory = async (
   }
 };
 
+export const updateCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { name, icon, color } = req.body;
+    await pool.query('UPDATE categories SET name=?, icon=?, color=? WHERE id=?', [
+      name,
+      icon,
+      color,
+      req.params.id,
+    ]);
+    const [rows] = await pool.query('SELECT * FROM categories WHERE id=?', [req.params.id]);
+    res.json((rows as unknown[])[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const deleteCategory = async (
   req: Request,
   res: Response,

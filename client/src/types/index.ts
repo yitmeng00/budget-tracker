@@ -49,7 +49,21 @@ export interface UserSettings {
 
 export interface MonthlySummary {
   year: number;
-  month: number;
+  month: number; // 1-indexed (MySQL MONTH())
   income: number;
   expenses: number;
+}
+
+export interface ApiTransaction {
+  id: number;
+  account_id: number;
+  category_id: number;
+  amount: number;
+  note: string;
+  tx_date: string; // 'YYYY-MM-DD'
+  tx_time: string; // 'HH:mm:ss'
+  category_name: string;
+  category_icon: string;
+  category_color: string;
+  account_name: string;
 }

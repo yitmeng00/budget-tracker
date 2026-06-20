@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import type { UserSettings } from '../types/index.ts';
-import { MOCK_ACCOUNTS } from '../lib/mockData.ts';
+import { fetchAccounts } from '../lib/api.ts';
 import { getLucideIcon } from '../lib/icons.ts';
 import { formatMoney } from '../lib/currency.ts';
 
@@ -10,7 +11,12 @@ interface Props {
 export default function AccountsPage({ settings }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
-  const netWorth = MOCK_ACCOUNTS.reduce((s, a) => s + a.balance, 0);
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: fetchAccounts,
+  });
+
+  const netWorth = accounts.reduce((s, a) => s + a.balance, 0);
 
   return (
     <div className="flex flex-col gap-4">
@@ -20,12 +26,12 @@ export default function AccountsPage({ settings }: Props) {
         <div className="text-3xl font-extrabold tabular-nums mb-3">
           {formatMoney(netWorth, sym, pos)}
         </div>
-        <div className="text-xs opacity-70">{MOCK_ACCOUNTS.length} accounts · June 2026</div>
+        <div className="text-xs opacity-70">{accounts.length} accounts</div>
       </div>
 
       {/* Account cards grid */}
       <div className="grid grid-cols-2 gap-4">
-        {MOCK_ACCOUNTS.map((account) => {
+        {accounts.map((account) => {
           const Icon = getLucideIcon(account.icon);
           const isNegative = account.balance < 0;
           const formattedBalance = isNegative

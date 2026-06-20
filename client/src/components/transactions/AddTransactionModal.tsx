@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 import type { UserSettings } from '../../types/index.ts';
-import { MOCK_ACCOUNTS, MOCK_CATEGORIES } from '../../lib/mockData.ts';
+import { fetchAccounts, fetchCategories, postTransaction } from '../../lib/api.ts';
 
 interface Props {
   onClose: () => void;
@@ -40,7 +41,29 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
   const switchType = (t: 'income' | 'expense') =>
     setForm((prev) => ({ ...prev, type: t, categoryId: '' }));
 
-  const filteredCategories = MOCK_CATEGORIES.filter((c) => c.type === form.type);
+  const queryClient = useQueryClient();
+
+  const { data: allCategories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: fetchAccounts,
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: postTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      onClose();
+    },
+  });
+
+  const filteredCategories = allCategories.filter((c) => c.type === form.type);
 
   const canSubmit =
     form.amount !== '' &&
@@ -49,8 +72,18 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
     form.accountId !== '';
 
   const handleSubmit = () => {
-    if (!canSubmit) return;
-    onClose(); // PR 11: wire to API
+    if (!canSubmit || isPending) return;
+    const now = new Date();
+    const txTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+    const rawAmt = Math.abs(Number(form.amount));
+    mutate({
+      account_id: form.accountId as number,
+      category_id: form.categoryId as number,
+      amount: form.type === 'expense' ? -rawAmt : rawAmt,
+      note: form.note,
+      tx_date: form.date,
+      tx_time: txTime,
+    });
   };
 
   const { currency_symbol: sym, unit_position: pos } = settings;
@@ -162,7 +195,7 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
               className={fieldCls}
             >
               <option value="">Select account</option>
-              {MOCK_ACCOUNTS.map((a) => (
+              {accounts.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
                 </option>

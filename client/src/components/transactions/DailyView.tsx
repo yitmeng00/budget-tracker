@@ -1,18 +1,19 @@
 import { formatSigned } from '../../lib/currency.ts';
-import { MOCK_DAILY_GROUPS } from '../../lib/mockData.ts';
+import type { RawDayGroup } from '../../lib/mockData.ts';
 import type { UserSettings } from '../../types/index.ts';
 import { getLucideIcon } from '../../lib/icons.ts';
 
 interface Props {
+  groups: RawDayGroup[];
   settings: UserSettings;
 }
 
-export default function DailyView({ settings }: Props) {
+export default function DailyView({ groups, settings }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
   return (
     <div className="flex flex-col gap-6">
-      {MOCK_DAILY_GROUPS.map((group) => {
+      {groups.map((group) => {
         const groupTotal = group.items.reduce((s, t) => s + t.amt, 0);
 
         return (
@@ -45,7 +46,6 @@ export default function DailyView({ settings }: Props) {
                       !isLast && 'border-b border-bg',
                     ].join(' ')}
                   >
-                    {/* Category icon */}
                     <div
                       className="w-11 h-11 shrink-0 rounded-[13px] flex items-center justify-center"
                       style={{ background: `color-mix(in srgb, ${tx.color} 14%, #ffffff)` }}
@@ -53,13 +53,11 @@ export default function DailyView({ settings }: Props) {
                       <Icon size={20} style={{ color: tx.color }} />
                     </div>
 
-                    {/* Description */}
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-[15px]">{tx.cat}</div>
                       <div className="text-[13px] text-text-subtle truncate">{tx.note}</div>
                     </div>
 
-                    {/* Amount + time */}
                     <div className="text-right shrink-0">
                       <div
                         className={[

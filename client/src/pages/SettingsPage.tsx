@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Check, Pencil, Plus, X } from 'lucide-react';
 import type { Category, UnitPosition, UserSettings, WeekDay } from '../types/index.ts';
-import { MOCK_CATEGORIES } from '../lib/mockData.ts';
+import { fetchCategories, postCategory, patchCategory } from '../lib/api.ts';
 
 const AUTO_COLORS = [
   '#7b5cf0',
@@ -46,11 +47,31 @@ interface NewCategoryForm {
 }
 
 export default function SettingsPage({ settings, onUpdate }: Props) {
-  const [categories, setCategories] = useState<Category[]>(MOCK_CATEGORIES);
+  const queryClient = useQueryClient();
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [showAddType, setShowAddType] = useState<'income' | 'expense' | null>(null);
   const [newCat, setNewCat] = useState<NewCategoryForm>({ name: '', type: 'expense' });
+
+  const invalidateCategories = () => queryClient.invalidateQueries({ queryKey: ['categories'] });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, cat }: { id: number; cat: Category }) =>
+      patchCategory(id, { name: editName.trim(), icon: cat.icon, color: cat.color }),
+    onSuccess: invalidateCategories,
+  });
+
+  const addMutation = useMutation({
+    mutationFn: (body: { name: string; type: 'income' | 'expense'; icon: string; color: string }) =>
+      postCategory(body),
+    onSuccess: invalidateCategories,
+  });
 
   const startEdit = (cat: Category) => {
     setEditingId(cat.id);
@@ -58,11 +79,9 @@ export default function SettingsPage({ settings, onUpdate }: Props) {
   };
 
   const saveEdit = () => {
-    if (editName.trim()) {
-      setCategories((prev) =>
-        prev.map((c) => (c.id === editingId ? { ...c, name: editName.trim() } : c)),
-      );
-    }
+    if (!editName.trim() || editingId === null) return;
+    const cat = categories.find((c) => c.id === editingId);
+    if (cat) updateMutation.mutate({ id: editingId, cat });
     setEditingId(null);
   };
 
@@ -77,12 +96,8 @@ export default function SettingsPage({ settings, onUpdate }: Props) {
 
   const addCategory = () => {
     if (!newCat.name.trim()) return;
-    const nextId = categories.length > 0 ? Math.max(...categories.map((c) => c.id)) + 1 : 1;
-    const color = AUTO_COLORS[nextId % AUTO_COLORS.length];
-    setCategories((prev) => [
-      ...prev,
-      { id: nextId, name: newCat.name.trim(), type: newCat.type, icon: 'tag', color },
-    ]);
+    const color = AUTO_COLORS[categories.length % AUTO_COLORS.length];
+    addMutation.mutate({ name: newCat.name.trim(), type: newCat.type, icon: 'tag', color });
     closeAddForm();
   };
 

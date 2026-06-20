@@ -1,9 +1,13 @@
-import { MOCK_MONTHLY_BARS } from '../../lib/mockData.ts';
+import type { MonthlyBarData } from '../../lib/mockData.ts';
 
 const BAR_MAX_PX = 120;
 
-export default function IncomeExpenseChart() {
-  const maxVal = Math.max(...MOCK_MONTHLY_BARS.flatMap((b) => [b.income, b.expense]));
+interface Props {
+  bars: MonthlyBarData[];
+}
+
+export default function IncomeExpenseChart({ bars }: Props) {
+  const maxVal = Math.max(...bars.flatMap((b) => [b.income, b.expense]), 1);
 
   return (
     <div className="bg-surface border border-border rounded-[20px] shadow-(--shadow-card) p-5">
@@ -22,7 +26,7 @@ export default function IncomeExpenseChart() {
       </div>
 
       <div className="flex gap-2">
-        {MOCK_MONTHLY_BARS.map((bar) => {
+        {bars.map((bar) => {
           const incH = Math.round((bar.income / maxVal) * BAR_MAX_PX);
           const expH = Math.round((bar.expense / maxVal) * BAR_MAX_PX);
           return (

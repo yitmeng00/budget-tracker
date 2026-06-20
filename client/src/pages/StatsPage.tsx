@@ -1,12 +1,16 @@
 import type { ComponentType } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, CreditCard, PiggyBank, Wallet } from 'lucide-react';
 import type { UserSettings } from '../types/index.ts';
-import { MOCK_MONTHLY_BARS } from '../lib/mockData.ts';
+import type { MonthlyBarData } from '../lib/mockData.ts';
+import { fetchMonthlyStats, fetchCategoryStats } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
 import IncomeExpenseChart from '../components/stats/IncomeExpenseChart.tsx';
 import TopCategories from '../components/stats/TopCategories.tsx';
 
 interface Props {
+  year: number;
+  month: number; // 0-indexed
   settings: UserSettings;
 }
 
@@ -34,12 +38,55 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
   );
 }
 
-export default function StatsPage({ settings }: Props) {
+const MONTH_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+export default function StatsPage({ year, month, settings }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
-  const cur = MOCK_MONTHLY_BARS[MOCK_MONTHLY_BARS.length - 1];
-  const net = cur.income - cur.expense;
-  const savingsRate = (net / cur.income) * 100;
+  const { data: monthlySummaries = [] } = useQuery({
+    queryKey: ['stats/monthly'],
+    queryFn: fetchMonthlyStats,
+  });
+
+  const { data: categoryBreakdown = [] } = useQuery({
+    queryKey: ['stats/categories', year, month],
+    queryFn: () => fetchCategoryStats(year, month),
+  });
+
+  const bars: MonthlyBarData[] = monthlySummaries
+    .slice(0, 6)
+    .reverse()
+    .map((r) => ({
+      month: MONTH_SHORT[r.month - 1],
+      income: Number(r.income),
+      expense: Number(r.expenses),
+    }));
+
+  const cur = monthlySummaries.find((r) => r.year === year && r.month === month + 1);
+  const totalIncome = Number(cur?.income ?? 0);
+  const totalExpenses = Number(cur?.expenses ?? 0);
+  const net = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? (net / totalIncome) * 100 : 0;
+
+  const topCats = categoryBreakdown.map((c) => ({
+    id: c.id,
+    name: c.name,
+    color: c.color,
+    amount: Number(c.total),
+  }));
 
   return (
     <div className="flex flex-col gap-4">
@@ -47,13 +94,13 @@ export default function StatsPage({ settings }: Props) {
         <StatCard
           icon={TrendingUp}
           label="Total Income"
-          value={formatMoney(cur.income, sym, pos)}
+          value={formatMoney(totalIncome, sym, pos)}
           color="#16a34a"
         />
         <StatCard
           icon={CreditCard}
           label="Total Expenses"
-          value={formatMoney(cur.expense, sym, pos)}
+          value={formatMoney(totalExpenses, sym, pos)}
           color="#ef4444"
         />
         <StatCard
@@ -70,8 +117,8 @@ export default function StatsPage({ settings }: Props) {
         />
       </div>
 
-      <IncomeExpenseChart />
-      <TopCategories settings={settings} />
+      <IncomeExpenseChart bars={bars} />
+      <TopCategories categories={topCats} settings={settings} />
     </div>
   );
 }
