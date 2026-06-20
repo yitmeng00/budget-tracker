@@ -13,6 +13,8 @@ interface Props {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
   settings: UserSettings;
+  year: number;
+  month: number; // 0-indexed
   budgetSpent: number;
   budgetTotal: number;
 }
@@ -21,13 +23,15 @@ export default function Sidebar({
   activeTab,
   onTabChange,
   settings,
+  year,
+  month,
   budgetSpent,
   budgetTotal,
 }: Props) {
   const sym = settings.currency_symbol;
   const pos = settings.unit_position;
-  const pct = Math.min(Math.round((budgetSpent / budgetTotal) * 100), 100);
-  const monthName = new Date(2026, 5, 1).toLocaleDateString('en-US', { month: 'long' });
+  const pct = budgetTotal > 0 ? Math.min(Math.round((budgetSpent / budgetTotal) * 100), 100) : 0;
+  const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
 
   return (
     <aside className="w-66 shrink-0 bg-surface border-r border-border flex flex-col px-4.5 py-5.5">
@@ -67,12 +71,18 @@ export default function Sidebar({
       {/* Budget progress card */}
       <div className="mt-6 p-4.5 rounded-[18px] text-white bg-[linear-gradient(150deg,#2563eb,#0ea5e9)]">
         <div className="text-sm font-bold mb-0.75">{monthName} budget</div>
-        <div className="text-[12.5px] opacity-85 mb-3">
-          {formatMoney(budgetSpent, sym, pos)} of {formatMoney(budgetTotal, sym, pos)}
-        </div>
-        <div className="h-2 rounded-md bg-white/28 overflow-hidden">
-          <div className="h-full rounded-md bg-white" style={{ width: `${pct}%` }} />
-        </div>
+        {budgetTotal > 0 ? (
+          <>
+            <div className="text-[12.5px] opacity-85 mb-3">
+              {formatMoney(budgetSpent, sym, pos)} of {formatMoney(budgetTotal, sym, pos)}
+            </div>
+            <div className="h-2 rounded-md bg-white/28 overflow-hidden">
+              <div className="h-full rounded-md bg-white" style={{ width: `${pct}%` }} />
+            </div>
+          </>
+        ) : (
+          <div className="text-[12.5px] opacity-70 mt-1">No budget limits set</div>
+        )}
       </div>
 
       {/* User footer */}
