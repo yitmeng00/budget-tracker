@@ -208,12 +208,14 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
   // ── Budget modal ──────────────────────────────────────────────────────────
   const [budgetModal, setBudgetModal] = useState<{ cat: Category } | null>(null);
   const [modalAmount, setModalAmount] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState<'override' | 'all' | null>(null);
 
   const openBudgetModal = (cat: Category) => {
     const entry = getBudgetEntry(cat.id);
     // Pre-fill with override if exists, else effective default
     const prefill = entry?.override_amount ?? entry?.default_amount;
     setModalAmount(prefill != null ? String(prefill) : '');
+    setConfirmDelete(null);
     setBudgetModal({ cat });
   };
 
@@ -673,22 +675,60 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
 
             {/* Secondary actions */}
             <div className="flex flex-col gap-0 mt-3">
-              {modalHasOverride && (
-                <button
-                  onClick={handleRemoveOverride}
-                  className="w-full py-2 text-xs font-semibold text-text-muted border-0 bg-transparent cursor-pointer hover:text-text-primary transition-colors"
-                >
-                  Remove {currentMonthLabel} override
-                </button>
-              )}
-              {modalHasDefault && (
-                <button
-                  onClick={handleRemoveAll}
-                  className="w-full py-2 text-xs font-semibold text-expense border-0 bg-transparent cursor-pointer hover:opacity-70 transition-opacity"
-                >
-                  Remove all budgets for this category
-                </button>
-              )}
+              {modalHasOverride &&
+                (confirmDelete === 'override' ? (
+                  <div className="flex items-center gap-2 py-1.5">
+                    <span className="text-xs text-text-muted flex-1">
+                      Remove {currentMonthLabel} override?
+                    </span>
+                    <button
+                      onClick={handleRemoveOverride}
+                      className="px-3 py-1 text-xs font-bold text-white bg-expense rounded-lg border-0 cursor-pointer hover:opacity-80 transition-opacity"
+                    >
+                      Yes, remove
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(null)}
+                      className="px-3 py-1 text-xs font-semibold text-text-muted bg-surface rounded-lg border border-border cursor-pointer hover:text-text-primary transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDelete('override')}
+                    className="w-full py-2 text-xs font-semibold text-text-muted border-0 bg-transparent cursor-pointer hover:text-text-primary transition-colors"
+                  >
+                    Remove {currentMonthLabel} override
+                  </button>
+                ))}
+              {modalHasDefault &&
+                (confirmDelete === 'all' ? (
+                  <div className="flex items-center gap-2 py-1.5">
+                    <span className="text-xs text-text-muted flex-1">
+                      Remove all budgets for this category?
+                    </span>
+                    <button
+                      onClick={handleRemoveAll}
+                      className="px-3 py-1 text-xs font-bold text-white bg-expense rounded-lg border-0 cursor-pointer hover:opacity-80 transition-opacity"
+                    >
+                      Yes, remove
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(null)}
+                      className="px-3 py-1 text-xs font-semibold text-text-muted bg-surface rounded-lg border border-border cursor-pointer hover:text-text-primary transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDelete('all')}
+                    className="w-full py-2 text-xs font-semibold text-expense border-0 bg-transparent cursor-pointer hover:opacity-70 transition-opacity"
+                  >
+                    Remove all budgets for this category
+                  </button>
+                ))}
             </div>
           </div>
         </div>
