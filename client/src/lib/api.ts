@@ -32,7 +32,8 @@ export const postCategory = (body: {
 export const patchCategory = (id: number, body: { name: string; icon: string; color: string }) =>
   api.patch<Category>(`/categories/${id}`, body).then((r) => r.data);
 
-export const apiDeleteCategory = (id: number) => api.delete(`/categories/${id}`);
+export const deleteCategory = (id: number, reassignTo?: number) =>
+  api.delete(`/categories/${id}`, reassignTo !== undefined ? { data: { reassignTo } } : undefined);
 
 export const fetchAccounts = () => api.get<Account[]>('/accounts').then((r) => r.data);
 

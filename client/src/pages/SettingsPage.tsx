@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronLeft, ChevronRight, Pencil, Plus, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react';
 import type { Category, UnitPosition, UserSettings, WeekDay } from '../types/index.ts';
 import {
   fetchCategories,
@@ -11,6 +11,7 @@ import {
   deleteAllBudgets,
   putBudgetOverride,
   deleteBudgetOverride,
+  deleteCategory,
 } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
 
@@ -139,6 +140,45 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
     const color = AUTO_COLORS[categories.length % AUTO_COLORS.length];
     addMutation.mutate({ name: newCat.name.trim(), type: newCat.type, icon: 'tag', color });
     closeAddForm();
+  };
+
+  // ── Delete category ───────────────────────────────────────────────────────
+  const [deleteModal, setDeleteModal] = useState<{
+    cat: Category;
+    reassignTo: number | null;
+    error: string | null;
+  } | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: ({ id, reassignTo }: { id: number; reassignTo?: number }) =>
+      deleteCategory(id, reassignTo),
+    onSuccess: () => {
+      invalidateCategories();
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      setDeleteModal(null);
+    },
+    onError: (err: unknown) => {
+      const response = (
+        err as { response?: { status: number; data?: { transactionCount: number } } }
+      )?.response;
+      const count = response?.data?.transactionCount;
+      const errorMsg =
+        response?.status === 409
+          ? `This category has ${count} transaction${count === 1 ? '' : 's'}. Select a category to reassign them to.`
+          : 'Failed to delete category. Please try again.';
+      setDeleteModal((prev) => (prev ? { ...prev, error: errorMsg } : prev));
+    },
+  });
+
+  const openDeleteModal = (cat: Category) => setDeleteModal({ cat, reassignTo: null, error: null });
+
+  const submitCategoryDelete = () => {
+    if (!deleteModal) return;
+    deleteMutation.mutate({
+      id: deleteModal.cat.id,
+      reassignTo: deleteModal.reassignTo ?? undefined,
+    });
   };
 
   // ── Budgets — independent month navigation ────────────────────────────────
@@ -472,6 +512,12 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                           >
                             <Pencil size={13} />
                           </button>
+                          <button
+                            onClick={() => openDeleteModal(cat)}
+                            className="w-6 h-6 flex items-center justify-center rounded-md text-text-faint hover:text-expense hover:bg-expense/10 border-0 cursor-pointer transition-colors shrink-0"
+                          >
+                            <Trash2 size={13} />
+                          </button>
                         </>
                       )}
                     </div>
@@ -729,6 +775,79 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                     Remove all budgets for this category
                   </button>
                 ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete category modal */}
+      {deleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={() => setDeleteModal(null)}
+        >
+          <div
+            className="bg-surface rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-extrabold text-text-primary">Delete category</h3>
+                <p className="text-xs text-text-muted mt-0.5">{deleteModal.cat.name}</p>
+              </div>
+              <button
+                onClick={() => setDeleteModal(null)}
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-border text-text-muted border-0 cursor-pointer hover:text-text-primary transition-colors shrink-0"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <p className="text-xs text-text-muted mb-3">
+              Reassign existing transactions to another category (required if any exist):
+            </p>
+
+            <select
+              value={deleteModal.reassignTo ?? ''}
+              onChange={(e) =>
+                setDeleteModal((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        reassignTo: e.target.value ? Number(e.target.value) : null,
+                        error: null,
+                      }
+                    : prev,
+                )
+              }
+              className="w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2.5 outline-none focus:border-accent mb-3 cursor-pointer"
+            >
+              <option value="">No reassignment (only if no transactions)</option>
+              {categories
+                .filter((c) => c.type === deleteModal.cat.type && c.id !== deleteModal.cat.id)
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+            </select>
+
+            {deleteModal.error && <p className="text-xs text-expense mb-3">{deleteModal.error}</p>}
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteModal(null)}
+                className="flex-1 py-2.5 rounded-[13px] bg-bg text-text-muted text-sm font-semibold border border-border cursor-pointer hover:text-text-primary transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitCategoryDelete}
+                disabled={deleteMutation.isPending}
+                className="flex-1 py-2.5 rounded-[13px] bg-expense text-white text-sm font-bold border-0 cursor-pointer hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+              </button>
             </div>
           </div>
         </div>
