@@ -8,6 +8,7 @@ import categoriesRouter from './routes/categories.route.js';
 import accountsRouter from './routes/accounts.route.js';
 import transactionsRouter from './routes/transactions.route.js';
 import statsRouter from './routes/stats.route.js';
+import budgetsRouter from './routes/budgets.route.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -25,6 +26,7 @@ app.use('/categories', categoriesRouter);
 app.use('/accounts', accountsRouter);
 app.use('/transactions', transactionsRouter);
 app.use('/stats', statsRouter);
+app.use('/budgets', budgetsRouter);
 
 app.use(errorHandler);
 

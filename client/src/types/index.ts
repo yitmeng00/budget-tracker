@@ -54,6 +54,12 @@ export interface MonthlySummary {
   expenses: number;
 }
 
+export interface BudgetEntry {
+  category_id: number;
+  default_amount: number | null;
+  override_amount: number | null;
+}
+
 export interface ApiTransaction {
   id: number;
   account_id: number;

@@ -65,6 +65,41 @@ INSERT IGNORE INTO accounts (id, name, type, icon, color, balance) VALUES
   (4, 'Touch ''n Go',    'E-wallet',         'smartphone',  '#7b5cf0',   380.00),
   (5, 'Maybank Credit',  'Credit card',      'credit-card', '#ef4444', -1150.00);
 
+-- ─── Budgets ─────────────────────────────────────────────────────────────────
+
+-- Time-series of default monthly limits.
+-- Effective default for (year, month) = latest row where (start_year, start_month) <= (year, month).
+-- This lets "update default in July" leave June's budget unchanged.
+CREATE TABLE IF NOT EXISTS budget_defaults (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  category_id INT UNSIGNED NOT NULL,
+  start_year  SMALLINT UNSIGNED NOT NULL,
+  start_month TINYINT UNSIGNED NOT NULL,  -- 1-indexed
+  amount      DECIMAL(15,2) NOT NULL,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_cat_start (category_id, start_year, start_month),
+  CONSTRAINT fk_bdef_cat FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+-- Month-specific overrides — take precedence over the default for that month only
+CREATE TABLE IF NOT EXISTS budget_overrides (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  category_id INT UNSIGNED NOT NULL,
+  year        SMALLINT UNSIGNED NOT NULL,
+  month       TINYINT UNSIGNED NOT NULL,  -- 1-indexed
+  amount      DECIMAL(15,2) NOT NULL,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_cat_ym (category_id, year, month),
+  CONSTRAINT fk_bover_cat FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+INSERT IGNORE INTO budget_defaults (category_id, start_year, start_month, amount) VALUES
+  (6,  2026, 6,  20.00),   -- Food & Dining:  RM 20/mo from Jun 2026
+  (7,  2026, 6,  40.00),   -- Transport:      RM 40/mo from Jun 2026
+  (9,  2026, 6,  50.00),   -- Groceries:      RM 50/mo from Jun 2026
+  (11, 2026, 6, 150.00);   -- Entertainment:  RM 150/mo from Jun 2026
+
 -- ─── Transactions ─────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS transactions (

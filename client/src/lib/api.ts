@@ -2,6 +2,7 @@ import axios from 'axios';
 import type {
   Account,
   ApiTransaction,
+  BudgetEntry,
   Category,
   MonthlySummary,
   UserSettings,
@@ -58,3 +59,25 @@ export const fetchCategoryStats = (year: number, month: number) =>
       { id: number; name: string; icon: string; color: string; total: number }[]
     >('/stats/categories', { params: { year, month: month + 1 } })
     .then((r) => r.data);
+
+// month is 1-indexed (as stored in DB)
+export const fetchBudgets = (year: number, month: number) =>
+  api.get<BudgetEntry[]>('/budgets', { params: { year, month } }).then((r) => r.data);
+
+// Upsert a default starting from (year, month). Pass current month for first-time setup,
+// or next month when updating an existing default to preserve the current month's value.
+export const putBudgetDefault = (categoryId: number, year: number, month: number, amount: number) =>
+  api.put(`/budgets/${categoryId}/default`, { year, month, amount });
+
+// Removes all defaults + overrides for this category.
+export const deleteAllBudgets = (categoryId: number) => api.delete(`/budgets/${categoryId}`);
+
+export const putBudgetOverride = (
+  categoryId: number,
+  year: number,
+  month: number,
+  amount: number,
+) => api.put(`/budgets/${categoryId}/override/${year}/${month}`, { amount });
+
+export const deleteBudgetOverride = (categoryId: number, year: number, month: number) =>
+  api.delete(`/budgets/${categoryId}/override/${year}/${month}`);

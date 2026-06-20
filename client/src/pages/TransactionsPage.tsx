@@ -137,7 +137,9 @@ export default function TransactionsPage({ year, month, settings }: Props) {
           calendarData={calendarData}
         />
       )}
-      {view === 'monthly' && <MonthlyView categories={monthlyCategories} settings={settings} />}
+      {view === 'monthly' && (
+        <MonthlyView year={year} month={month} categories={monthlyCategories} settings={settings} />
+      )}
     </div>
   );
 }
