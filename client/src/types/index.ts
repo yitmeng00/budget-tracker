@@ -18,6 +18,12 @@ export interface Category {
   type: 'income' | 'expense';
 }
 
+export interface AccountGroup {
+  id: number;
+  name: string;
+  sort_order: number;
+}
+
 export interface Account {
   id: number;
   name: string;
@@ -25,6 +31,7 @@ export interface Account {
   icon: string;
   color: string;
   balance: number;
+  group_id: number | null;
 }
 
 export interface Transaction {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type {
   Account,
+  AccountGroup,
   ApiTransaction,
   BudgetEntry,
   Category,
@@ -36,6 +37,31 @@ export const deleteCategory = (id: number, reassignTo?: number) =>
   api.delete(`/categories/${id}`, reassignTo !== undefined ? { data: { reassignTo } } : undefined);
 
 export const fetchAccounts = () => api.get<Account[]>('/accounts').then((r) => r.data);
+
+export const fetchAccountGroups = () =>
+  api.get<AccountGroup[]>('/account-groups').then((r) => r.data);
+
+export const postAccountGroup = (name: string) =>
+  api.post<AccountGroup>('/account-groups', { name }).then((r) => r.data);
+
+export const patchAccountGroup = (id: number, name: string) =>
+  api.patch<AccountGroup>(`/account-groups/${id}`, { name }).then((r) => r.data);
+
+export const deleteAccountGroup = (id: number) => api.delete(`/account-groups/${id}`);
+
+export const patchAccount = (
+  id: number,
+  body: Partial<Pick<Account, 'name' | 'type' | 'icon' | 'color' | 'balance' | 'group_id'>>,
+) => api.patch<Account>(`/accounts/${id}`, body).then((r) => r.data);
+
+export const postAccount = (body: {
+  name: string;
+  type: string;
+  icon?: string;
+  color?: string;
+  balance?: number;
+  group_id?: number | null;
+}) => api.post<Account>('/accounts', body).then((r) => r.data);
 
 export const fetchTransactions = (year: number, month: number) =>
   api

@@ -9,6 +9,7 @@ import accountsRouter from './routes/accounts.route.js';
 import transactionsRouter from './routes/transactions.route.js';
 import statsRouter from './routes/stats.route.js';
 import budgetsRouter from './routes/budgets.route.js';
+import accountGroupsRouter from './routes/account_groups.route.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -24,6 +25,7 @@ app.get('/health', (_req, res) => {
 app.use('/settings', settingsRouter);
 app.use('/categories', categoriesRouter);
 app.use('/accounts', accountsRouter);
+app.use('/account-groups', accountGroupsRouter);
 app.use('/transactions', transactionsRouter);
 app.use('/stats', statsRouter);
 app.use('/budgets', budgetsRouter);
