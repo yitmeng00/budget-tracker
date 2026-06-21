@@ -66,14 +66,21 @@ export default function StatsPage({ year, month, settings }: Props) {
     queryFn: () => fetchCategoryStats(year, month),
   });
 
-  const bars: MonthlyBarData[] = monthlySummaries
-    .slice(0, 6)
-    .reverse()
-    .map((r) => ({
-      month: MONTH_SHORT[r.month - 1],
-      income: Number(r.income),
-      expense: Number(r.expenses),
-    }));
+  const bars: MonthlyBarData[] = Array.from({ length: 6 }, (_, i) => {
+    const offset = 5 - i;
+    let m = month + 1 - offset; // month is 0-indexed; m is 1-indexed
+    let y = year;
+    while (m <= 0) {
+      m += 12;
+      y -= 1;
+    }
+    const found = monthlySummaries.find((r) => r.year === y && r.month === m);
+    return {
+      month: MONTH_SHORT[m - 1],
+      income: Number(found?.income ?? 0),
+      expense: Number(found?.expenses ?? 0),
+    };
+  });
 
   const cur = monthlySummaries.find((r) => r.year === year && r.month === month + 1);
   const totalIncome = Number(cur?.income ?? 0);

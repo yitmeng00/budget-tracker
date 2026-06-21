@@ -34,30 +34,36 @@ export default function TopCategories({ categories, settings }: Props) {
     <div className="bg-surface border border-border rounded-[20px] shadow-(--shadow-card) p-5">
       <h3 className="text-sm font-extrabold text-text-primary mb-5">Top Categories</h3>
 
-      <div className="flex flex-col gap-4">
-        {top5.map((cat, i) => {
-          const pct = (cat.amount / maxAbs) * 100;
-          const barColor = AUTO_COLORS[i % AUTO_COLORS.length];
-          return (
-            <div key={cat.id}>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-semibold text-text-primary flex-1 min-w-0 truncate">
-                  {cat.name}
-                </span>
-                <span className="text-sm font-bold text-text-primary tabular-nums shrink-0">
-                  {formatMoney(cat.amount, sym, pos)}
-                </span>
+      {top5.length === 0 ? (
+        <div className="flex items-center justify-center py-8 text-sm text-text-muted">
+          No expense data for this month
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {top5.map((cat, i) => {
+            const pct = (cat.amount / maxAbs) * 100;
+            const barColor = AUTO_COLORS[i % AUTO_COLORS.length];
+            return (
+              <div key={cat.id}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-semibold text-text-primary flex-1 min-w-0 truncate">
+                    {cat.name}
+                  </span>
+                  <span className="text-sm font-bold text-text-primary tabular-nums shrink-0">
+                    {formatMoney(cat.amount, sym, pos)}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-border rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${pct}%`, background: barColor }}
+                  />
+                </div>
               </div>
-              <div className="h-1.5 bg-border rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{ width: `${pct}%`, background: barColor }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

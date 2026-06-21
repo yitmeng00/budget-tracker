@@ -8,6 +8,7 @@ interface Props {
 
 export default function IncomeExpenseChart({ bars }: Props) {
   const maxVal = Math.max(...bars.flatMap((b) => [b.income, b.expense]), 1);
+  const isEmpty = bars.every((b) => b.income === 0 && b.expense === 0);
 
   return (
     <div className="bg-surface border border-border rounded-[20px] shadow-(--shadow-card) p-5">
@@ -25,24 +26,50 @@ export default function IncomeExpenseChart({ bars }: Props) {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        {bars.map((bar) => {
-          const incH = Math.round((bar.income / maxVal) * BAR_MAX_PX);
-          const expH = Math.round((bar.expense / maxVal) * BAR_MAX_PX);
-          return (
-            <div key={bar.month} className="flex-1 flex flex-col items-center gap-1.5">
-              <div className="flex items-end gap-0.5 w-full" style={{ height: `${BAR_MAX_PX}px` }}>
-                <div className="flex-1 rounded-t-[3px] bg-income" style={{ height: `${incH}px` }} />
+      {isEmpty ? (
+        <div className="flex items-center justify-center py-8 text-sm text-text-muted">
+          No transaction data for this period
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          {bars.map((bar) => {
+            const hasData = bar.income > 0 || bar.expense > 0;
+            const incH = hasData
+              ? Math.max(Math.round((bar.income / maxVal) * BAR_MAX_PX), bar.income > 0 ? 4 : 0)
+              : 0;
+            const expH = hasData
+              ? Math.max(Math.round((bar.expense / maxVal) * BAR_MAX_PX), bar.expense > 0 ? 4 : 0)
+              : 0;
+            return (
+              <div key={bar.month} className="flex-1 flex flex-col items-center gap-1.5">
                 <div
-                  className="flex-1 rounded-t-[3px] bg-expense"
-                  style={{ height: `${expH}px` }}
-                />
+                  className="flex items-end gap-0.5 w-full"
+                  style={{ height: `${BAR_MAX_PX}px` }}
+                >
+                  {hasData ? (
+                    <>
+                      <div
+                        className="flex-1 rounded-t-[3px] bg-income"
+                        style={{ height: `${incH}px` }}
+                      />
+                      <div
+                        className="flex-1 rounded-t-[3px] bg-expense"
+                        style={{ height: `${expH}px` }}
+                      />
+                    </>
+                  ) : (
+                    <div
+                      className="flex-1 rounded-t-[3px] bg-border/60"
+                      style={{ height: '4px' }}
+                    />
+                  )}
+                </div>
+                <span className="text-[10px] font-medium text-text-muted">{bar.month}</span>
               </div>
-              <span className="text-[10px] font-medium text-text-muted">{bar.month}</span>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
