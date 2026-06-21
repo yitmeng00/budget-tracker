@@ -1,4 +1,4 @@
-import { ArrowLeftRight, ChevronDown, PieChart, Settings, Wallet } from 'lucide-react';
+import { ArrowLeftRight, PieChart, Settings, Wallet } from 'lucide-react';
 import type { Tab, UserSettings } from '../types/index.ts';
 import { formatMoney } from '../lib/currency.ts';
 
@@ -83,20 +83,6 @@ export default function Sidebar({
         ) : (
           <div className="text-[12.5px] opacity-70 mt-1">No budget limits set</div>
         )}
-      </div>
-
-      {/* User footer */}
-      <div className="mt-auto flex items-center gap-2.75 p-2.75 rounded-2xl bg-accent-soft">
-        <div className="w-10 h-10 shrink-0 rounded-xl bg-[linear-gradient(135deg,#f59e0b,#ef4444)] flex items-center justify-center text-white font-extrabold text-[15px]">
-          TU
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-bold text-sm truncate">Test User</div>
-          <div className="text-xs text-text-subtle">
-            {settings.currency_code} · {sym}
-          </div>
-        </div>
-        <ChevronDown size={18} className="text-text-faint" />
       </div>
     </aside>
   );
