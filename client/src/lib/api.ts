@@ -73,6 +73,7 @@ export const postTransaction = (body: {
   category_id: number;
   amount: number;
   note: string;
+  description?: string;
   tx_date: string;
   tx_time: string;
 }) => api.post<ApiTransaction>('/transactions', body).then((r) => r.data);
@@ -84,6 +85,7 @@ export const patchTransaction = (
     category_id: number;
     amount: number;
     note: string;
+    description?: string;
     tx_date: string;
     tx_time: string;
   },

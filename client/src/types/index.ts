@@ -73,6 +73,7 @@ export interface ApiTransaction {
   category_id: number;
   amount: number;
   note: string;
+  description: string | null;
   tx_date: string; // 'YYYY-MM-DD'
   tx_time: string; // 'HH:mm:ss'
   category_name: string;

@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   category_id INT UNSIGNED NOT NULL,
   amount      DECIMAL(15,2) NOT NULL,
   note        VARCHAR(255) NOT NULL DEFAULT '',
+  description TEXT         NULL DEFAULT NULL,
   tx_date     DATE NOT NULL,
   tx_time     TIME NOT NULL DEFAULT '00:00:00',
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -131,6 +132,8 @@ CREATE TABLE IF NOT EXISTS transactions (
   CONSTRAINT fk_tx_account  FOREIGN KEY (account_id)  REFERENCES accounts(id)   ON DELETE RESTRICT,
   CONSTRAINT fk_tx_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 );
+
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS description TEXT NULL DEFAULT NULL;
 
 INSERT IGNORE INTO transactions (id, account_id, category_id, amount, note, tx_date, tx_time) VALUES
   (1,  3, 1,  5200.00, 'Monthly salary — Acme Sdn Bhd',   '2026-06-16', '09:00:00'),

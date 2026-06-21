@@ -23,6 +23,7 @@ interface FormState {
   accountId: number | '';
   date: string;
   note: string;
+  description: string;
 }
 
 const localToday = () => {
@@ -48,6 +49,7 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
           accountId: transaction.account_id,
           date: transaction.tx_date,
           note: transaction.note,
+          description: transaction.description ?? '',
         }
       : {
           type: 'expense',
@@ -56,6 +58,7 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
           accountId: '',
           date: localToday(),
           note: '',
+          description: '',
         },
   );
 
@@ -91,7 +94,8 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
     form.amount !== '' &&
     Number(form.amount) > 0 &&
     form.categoryId !== '' &&
-    form.accountId !== '';
+    form.accountId !== '' &&
+    form.note.trim() !== '';
 
   const handleSubmit = () => {
     if (!canSubmit || isPending) return;
@@ -105,6 +109,7 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
       category_id: form.categoryId as number,
       amount: form.type === 'expense' ? -rawAmt : rawAmt,
       note: form.note,
+      description: form.description.trim() || undefined,
       tx_date: form.date,
       tx_time: txTime,
     });
@@ -254,18 +259,27 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
 
           {/* Note */}
           <div>
-            <label className={labelCls}>
-              Note <span className="font-normal">(optional)</span>
-            </label>
+            <label className={labelCls}>Note</label>
             <input
               type="text"
-              placeholder="Add a note..."
+              placeholder="e.g. Netflix subscription"
               value={form.note}
               onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSubmit();
-              }}
               className={fieldCls}
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className={labelCls}>
+              Description <span className="font-normal">(optional)</span>
+            </label>
+            <textarea
+              placeholder="Add more details..."
+              value={form.description}
+              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              rows={3}
+              className={`${fieldCls} resize-none`}
             />
           </div>
 

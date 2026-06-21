@@ -71,6 +71,7 @@ const buildDailyGroups = (txs: ApiTransaction[]): RawDayGroup[] => {
       icon: tx.category_icon,
       cat: tx.category_name,
       note: tx.note,
+      description: tx.description,
       time: formatTime(tx.tx_time),
       amt: tx.amount,
       color: tx.category_color,

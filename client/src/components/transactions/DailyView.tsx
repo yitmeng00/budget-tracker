@@ -51,6 +51,11 @@ export default function DailyView({ groups, settings, onEdit }: Props) {
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-[15px]">{tx.cat}</div>
                       <div className="text-[13px] text-text-subtle truncate">{tx.note}</div>
+                      {tx.description && (
+                        <div className="text-[12px] text-text-faint truncate mt-0.5">
+                          {tx.description}
+                        </div>
+                      )}
                     </div>
 
                     <div className="text-right shrink-0">
