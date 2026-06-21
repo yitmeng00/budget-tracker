@@ -1,14 +1,14 @@
 import { formatSigned } from '../../lib/currency.ts';
 import type { RawDayGroup } from '../../lib/mockData.ts';
 import type { UserSettings } from '../../types/index.ts';
-import { getLucideIcon } from '../../lib/icons.ts';
 
 interface Props {
   groups: RawDayGroup[];
   settings: UserSettings;
+  onEdit: (id: number) => void;
 }
 
-export default function DailyView({ groups, settings }: Props) {
+export default function DailyView({ groups, settings, onEdit }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
   return (
@@ -35,26 +35,19 @@ export default function DailyView({ groups, settings }: Props) {
             </div>
 
             {/* Transaction list */}
-            <div className="bg-surface border border-border rounded-[20px] px-4.5 shadow-(--shadow-card)">
+            <div className="bg-surface border border-border rounded-[20px] overflow-hidden shadow-(--shadow-card)">
               {group.items.map((tx, i) => {
-                const Icon = getLucideIcon(tx.icon);
                 const isLast = i === group.items.length - 1;
 
                 return (
                   <div
                     key={tx.id}
+                    onClick={() => onEdit(tx.id)}
                     className={[
-                      'flex items-center gap-3.5 py-3.5 px-0.5',
+                      'flex items-center gap-3.5 py-3.5 px-4.5 cursor-pointer hover:bg-bg/60 transition-colors',
                       !isLast && 'border-b border-bg',
                     ].join(' ')}
                   >
-                    <div
-                      className="w-11 h-11 shrink-0 rounded-[13px] flex items-center justify-center"
-                      style={{ background: `color-mix(in srgb, ${tx.color} 14%, #ffffff)` }}
-                    >
-                      <Icon size={20} style={{ color: tx.color }} />
-                    </div>
-
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-[15px]">{tx.cat}</div>
                       <div className="text-[13px] text-text-subtle truncate">{tx.note}</div>

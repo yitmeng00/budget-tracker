@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
-import type { UserSettings } from '../../types/index.ts';
-import { fetchAccounts, fetchCategories, postTransaction } from '../../lib/api.ts';
+import type { ApiTransaction, UserSettings } from '../../types/index.ts';
+import {
+  fetchAccounts,
+  fetchCategories,
+  patchTransaction,
+  postTransaction,
+} from '../../lib/api.ts';
 
 interface Props {
   onClose: () => void;
   settings: UserSettings;
+  transaction?: ApiTransaction; // when provided, operates in edit mode
+  onDelete?: () => void;
 }
 
 interface FormState {
@@ -28,15 +35,29 @@ const fieldCls =
 
 const labelCls = 'text-xs font-bold text-text-muted mb-1.5 block';
 
-export default function AddTransactionModal({ onClose, settings }: Props) {
-  const [form, setForm] = useState<FormState>({
-    type: 'expense',
-    amount: '',
-    categoryId: '',
-    accountId: '',
-    date: localToday(),
-    note: '',
-  });
+export default function AddTransactionModal({ onClose, settings, transaction, onDelete }: Props) {
+  const isEdit = transaction !== undefined;
+
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [form, setForm] = useState<FormState>(() =>
+    isEdit
+      ? {
+          type: transaction.amount > 0 ? 'income' : 'expense',
+          amount: String(Math.abs(transaction.amount)),
+          categoryId: transaction.category_id,
+          accountId: transaction.account_id,
+          date: transaction.tx_date,
+          note: transaction.note,
+        }
+      : {
+          type: 'expense',
+          amount: '',
+          categoryId: '',
+          accountId: '',
+          date: localToday(),
+          note: '',
+        },
+  );
 
   const switchType = (t: 'income' | 'expense') =>
     setForm((prev) => ({ ...prev, type: t, categoryId: '' }));
@@ -54,7 +75,8 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: postTransaction,
+    mutationFn: (body: Parameters<typeof postTransaction>[0]) =>
+      isEdit ? patchTransaction(transaction!.id, body) : postTransaction(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
@@ -74,7 +96,9 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
   const handleSubmit = () => {
     if (!canSubmit || isPending) return;
     const now = new Date();
-    const txTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+    const txTime = isEdit
+      ? transaction!.tx_time
+      : `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
     const rawAmt = Math.abs(Number(form.amount));
     mutate({
       account_id: form.accountId as number,
@@ -99,7 +123,9 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="text-base font-extrabold text-text-primary">Add Transaction</h2>
+          <h2 className="text-base font-extrabold text-text-primary">
+            {isEdit ? 'Edit Transaction' : 'Add Transaction'}
+          </h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-xl text-text-muted hover:text-text-primary hover:bg-border border-0 cursor-pointer transition-colors"
@@ -232,20 +258,48 @@ export default function AddTransactionModal({ onClose, settings }: Props) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 pt-1">
-            <button
-              onClick={handleSubmit}
-              disabled={!canSubmit}
-              className="flex-1 py-2.5 rounded-[13px] bg-accent text-white text-sm font-bold border-0 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-            >
-              Add Transaction
-            </button>
-            <button
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-[13px] bg-bg text-text-muted text-sm font-semibold border border-border cursor-pointer hover:text-text-primary transition-colors"
-            >
-              Cancel
-            </button>
+          <div className="flex items-center gap-2 pt-1">
+            {isEdit &&
+              onDelete &&
+              (confirmDelete ? (
+                <>
+                  <span className="text-xs font-semibold text-text-muted mr-1">Delete?</span>
+                  <button
+                    onClick={onDelete}
+                    className="px-3 py-2.5 rounded-[13px] bg-expense text-white text-sm font-bold border-0 cursor-pointer hover:opacity-90 transition-opacity"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="px-3 py-2.5 rounded-[13px] bg-bg text-text-muted text-sm font-semibold border border-border cursor-pointer hover:text-text-primary transition-colors"
+                  >
+                    No
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="px-3 py-2.5 rounded-[13px] text-expense text-sm font-semibold border border-expense/40 bg-transparent cursor-pointer hover:bg-expense/10 transition-colors"
+                >
+                  Delete
+                </button>
+              ))}
+            <div className="flex gap-2 ml-auto">
+              <button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                className="py-2.5 px-5 rounded-[13px] bg-accent text-white text-sm font-bold border-0 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isEdit ? 'Save Changes' : 'Add Transaction'}
+              </button>
+              <button
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-[13px] bg-bg text-text-muted text-sm font-semibold border border-border cursor-pointer hover:text-text-primary transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>

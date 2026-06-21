@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { TxView, UserSettings, ApiTransaction } from '../types/index.ts';
 import type { CalendarDayData, MonthlyCategoryItem, RawDayGroup } from '../lib/mockData.ts';
-import { fetchTransactions } from '../lib/api.ts';
+import { deleteTransaction, fetchTransactions } from '../lib/api.ts';
 import SummaryCards from '../components/transactions/SummaryCards.tsx';
 import ViewSwitcher from '../components/transactions/ViewSwitcher.tsx';
 import DailyView from '../components/transactions/DailyView.tsx';
 import CalendarView from '../components/transactions/CalendarView.tsx';
 import MonthlyView from '../components/transactions/MonthlyView.tsx';
+import AddTransactionModal from '../components/transactions/AddTransactionModal.tsx';
 
 interface Props {
   year: number;
@@ -109,11 +110,28 @@ const buildMonthlyCategories = (txs: ApiTransaction[]): MonthlyCategoryItem[] =>
 
 export default function TransactionsPage({ year, month, settings }: Props) {
   const [view, setView] = useState<TxView>('daily');
+  const [editTx, setEditTx] = useState<ApiTransaction | null>(null);
+
+  const queryClient = useQueryClient();
 
   const { data: txs = [] } = useQuery({
     queryKey: ['transactions', year, month],
     queryFn: () => fetchTransactions(year, month),
   });
+
+  const { mutate: deleteTx } = useMutation({
+    mutationFn: deleteTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+    },
+  });
+
+  const handleEdit = (id: number) => {
+    const tx = txs.find((t) => t.id === id);
+    if (tx) setEditTx(tx);
+  };
 
   const totalIncome = txs.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
   const totalExpenses = txs.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
@@ -123,23 +141,44 @@ export default function TransactionsPage({ year, month, settings }: Props) {
   const monthlyCategories = buildMonthlyCategories(txs);
 
   return (
-    <div>
-      <SummaryCards income={totalIncome} expenses={totalExpenses} settings={settings} />
-      <ViewSwitcher active={view} onChange={setView} />
+    <>
+      <div>
+        <SummaryCards income={totalIncome} expenses={totalExpenses} settings={settings} />
+        <ViewSwitcher active={view} onChange={setView} />
 
-      {view === 'daily' && <DailyView groups={dailyGroups} settings={settings} />}
-      {view === 'calendar' && (
-        <CalendarView
-          key={`${year}-${month}`}
-          year={year}
-          month={month}
+        {view === 'daily' && (
+          <DailyView groups={dailyGroups} settings={settings} onEdit={handleEdit} />
+        )}
+        {view === 'calendar' && (
+          <CalendarView
+            key={`${year}-${month}`}
+            year={year}
+            month={month}
+            settings={settings}
+            calendarData={calendarData}
+          />
+        )}
+        {view === 'monthly' && (
+          <MonthlyView
+            year={year}
+            month={month}
+            categories={monthlyCategories}
+            settings={settings}
+          />
+        )}
+      </div>
+
+      {editTx && (
+        <AddTransactionModal
+          transaction={editTx}
           settings={settings}
-          calendarData={calendarData}
+          onClose={() => setEditTx(null)}
+          onDelete={() => {
+            deleteTx(editTx.id);
+            setEditTx(null);
+          }}
         />
       )}
-      {view === 'monthly' && (
-        <MonthlyView year={year} month={month} categories={monthlyCategories} settings={settings} />
-      )}
-    </div>
+    </>
   );
 }

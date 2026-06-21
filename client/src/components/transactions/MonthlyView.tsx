@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { UserSettings } from '../../types/index.ts';
 import type { MonthlyCategoryItem } from '../../lib/mockData.ts';
-import { getLucideIcon } from '../../lib/icons.ts';
 import { formatMoney } from '../../lib/currency.ts';
 import { fetchBudgets } from '../../lib/api.ts';
 
@@ -41,7 +40,6 @@ export default function MonthlyView({ year, month, categories, settings }: Props
 
         <div className="flex flex-col gap-4">
           {expenses.map((cat) => {
-            const Icon = getLucideIcon(cat.icon);
             const entry = budgets.find((b) => b.category_id === cat.id);
             const effectiveAmount = entry ? (entry.override_amount ?? entry.default_amount) : null;
             const spent = Math.abs(cat.amount);
@@ -59,12 +57,6 @@ export default function MonthlyView({ year, month, categories, settings }: Props
             return (
               <div key={cat.id}>
                 <div className="flex items-center gap-3 mb-1.5">
-                  <div
-                    className="w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0"
-                    style={{ background: `color-mix(in srgb, ${cat.color} 14%, #ffffff)` }}
-                  >
-                    <Icon size={17} style={{ color: cat.color }} />
-                  </div>
                   <span className="text-sm font-semibold text-text-primary flex-1 min-w-0 truncate">
                     {cat.name}
                   </span>
@@ -85,7 +77,7 @@ export default function MonthlyView({ year, month, categories, settings }: Props
                   </div>
                 </div>
 
-                <div className="ml-12 h-1.5 bg-border rounded-full overflow-hidden">
+                <div className="h-1.5 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-[width] duration-300"
                     style={{
@@ -96,7 +88,7 @@ export default function MonthlyView({ year, month, categories, settings }: Props
                 </div>
 
                 {isOver && effectiveAmount !== null && (
-                  <div className="ml-12 mt-1 text-[11px] font-semibold text-expense">
+                  <div className="mt-1 text-[11px] font-semibold text-expense">
                     Over by {formatMoney(spent - effectiveAmount, sym, pos)}
                   </div>
                 )}
@@ -112,17 +104,10 @@ export default function MonthlyView({ year, month, categories, settings }: Props
 
         <div className="flex flex-col gap-4">
           {incomes.map((cat) => {
-            const Icon = getLucideIcon(cat.icon);
             const pct = (cat.amount / maxIncome) * 100;
             return (
               <div key={cat.id}>
                 <div className="flex items-center gap-3 mb-2">
-                  <div
-                    className="w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0"
-                    style={{ background: `color-mix(in srgb, ${cat.color} 14%, #ffffff)` }}
-                  >
-                    <Icon size={17} style={{ color: cat.color }} />
-                  </div>
                   <span className="text-sm font-semibold text-text-primary flex-1 min-w-0 truncate">
                     {cat.name}
                   </span>
@@ -130,7 +115,7 @@ export default function MonthlyView({ year, month, categories, settings }: Props
                     {formatMoney(cat.amount, sym, pos)}
                   </span>
                 </div>
-                <div className="ml-12 h-1.5 bg-border rounded-full overflow-hidden">
+                <div className="h-1.5 bg-border rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full"
                     style={{ width: `${pct}%`, background: cat.color }}

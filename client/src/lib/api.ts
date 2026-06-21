@@ -77,6 +77,20 @@ export const postTransaction = (body: {
   tx_time: string;
 }) => api.post<ApiTransaction>('/transactions', body).then((r) => r.data);
 
+export const patchTransaction = (
+  id: number,
+  body: {
+    account_id: number;
+    category_id: number;
+    amount: number;
+    note: string;
+    tx_date: string;
+    tx_time: string;
+  },
+) => api.patch<ApiTransaction>(`/transactions/${id}`, body).then((r) => r.data);
+
+export const deleteTransaction = (id: number) => api.delete(`/transactions/${id}`);
+
 export const fetchMonthlyStats = () =>
   api.get<MonthlySummary[]>('/stats/monthly').then((r) => r.data);
 

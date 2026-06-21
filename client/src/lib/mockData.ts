@@ -175,6 +175,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'landmark',
     color: '#2563eb',
     balance: 12450.0,
+    group_id: null,
   },
   {
     id: 2,
@@ -183,6 +184,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'piggy-bank',
     color: '#16a34a',
     balance: 8320.5,
+    group_id: null,
   },
   {
     id: 3,
@@ -191,6 +193,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'wallet',
     color: '#06b6d4',
     balance: 285.4,
+    group_id: null,
   },
   {
     id: 4,
@@ -199,6 +202,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'credit-card',
     color: '#ef4444',
     balance: -1250.0,
+    group_id: null,
   },
   {
     id: 5,
@@ -207,6 +211,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'smartphone',
     color: '#22c55e',
     balance: 45.0,
+    group_id: null,
   },
 ];
 
