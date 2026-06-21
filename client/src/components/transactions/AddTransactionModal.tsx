@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import type { ApiTransaction, UserSettings } from '../../types/index.ts';
 import {
   fetchAccounts,
@@ -31,7 +31,7 @@ const localToday = () => {
 };
 
 const fieldCls =
-  'w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2.5 outline-none focus:border-accent transition-colors';
+  'w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] pl-3 pr-8 py-2.5 outline-none focus:border-accent transition-colors appearance-none';
 
 const labelCls = 'text-xs font-bold text-text-muted mb-1.5 block';
 
@@ -188,45 +188,57 @@ export default function AddTransactionModal({ onClose, settings, transaction, on
           {/* Category */}
           <div>
             <label className={labelCls}>Category</label>
-            <select
-              value={form.categoryId}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  categoryId: e.target.value === '' ? '' : Number(e.target.value),
-                }))
-              }
-              className={fieldCls}
-            >
-              <option value="">Select category</option>
-              {filteredCategories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={form.categoryId}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    categoryId: e.target.value === '' ? '' : Number(e.target.value),
+                  }))
+                }
+                className={fieldCls}
+              >
+                <option value="">Select category</option>
+                {filteredCategories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted"
+              />
+            </div>
           </div>
 
           {/* Account */}
           <div>
             <label className={labelCls}>Account</label>
-            <select
-              value={form.accountId}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  accountId: e.target.value === '' ? '' : Number(e.target.value),
-                }))
-              }
-              className={fieldCls}
-            >
-              <option value="">Select account</option>
-              {accounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={form.accountId}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    accountId: e.target.value === '' ? '' : Number(e.target.value),
+                  }))
+                }
+                className={fieldCls}
+              >
+                <option value="">Select account</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted"
+              />
+            </div>
           </div>
 
           {/* Date */}

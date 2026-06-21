@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronLeft, ChevronRight, Pencil, Plus, Trash2, X } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 import type { Account, Category, UnitPosition, UserSettings, WeekDay } from '../types/index.ts';
 import {
   fetchCategories,
@@ -799,28 +808,34 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                   onWheel={(e) => (e.target as HTMLInputElement).blur()}
                   className="flex-1 text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2 outline-none focus:border-accent"
                 />
-                <select
-                  value={newAccountDraft.group_id ?? ''}
-                  onChange={(e) =>
-                    setNewAccountDraft((p) => ({
-                      ...p,
-                      group_id: e.target.value ? Number(e.target.value) : null,
-                    }))
-                  }
-                  className="flex-1 text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2 outline-none focus:border-accent cursor-pointer"
-                >
-                  <option value="" disabled>
-                    Select group
-                  </option>
-                  {accountGroups
-                    .slice()
-                    .sort((a, b) => a.sort_order - b.sort_order)
-                    .map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.name}
-                      </option>
-                    ))}
-                </select>
+                <div className="relative flex-1">
+                  <select
+                    value={newAccountDraft.group_id ?? ''}
+                    onChange={(e) =>
+                      setNewAccountDraft((p) => ({
+                        ...p,
+                        group_id: e.target.value ? Number(e.target.value) : null,
+                      }))
+                    }
+                    className="w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] pl-3 pr-8 py-2 outline-none focus:border-accent cursor-pointer appearance-none"
+                  >
+                    <option value="" disabled>
+                      Select group
+                    </option>
+                    {accountGroups
+                      .slice()
+                      .sort((a, b) => a.sort_order - b.sort_order)
+                      .map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name}
+                        </option>
+                      ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
@@ -882,28 +897,34 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             className="flex-1 min-w-0 text-xs font-semibold text-text-primary bg-bg border border-border rounded-lg px-2 py-1 outline-none focus:border-accent"
                           />
-                          <select
-                            value={editAccountDraft.group_id ?? ''}
-                            onChange={(e) =>
-                              setEditAccountDraft((p) => ({
-                                ...p,
-                                group_id: e.target.value ? Number(e.target.value) : null,
-                              }))
-                            }
-                            className="flex-1 min-w-0 text-xs font-semibold text-text-primary bg-bg border border-border rounded-lg px-2 py-1 outline-none focus:border-accent cursor-pointer"
-                          >
-                            <option value="" disabled>
-                              Select group
-                            </option>
-                            {accountGroups
-                              .slice()
-                              .sort((a, b) => a.sort_order - b.sort_order)
-                              .map((g) => (
-                                <option key={g.id} value={g.id}>
-                                  {g.name}
-                                </option>
-                              ))}
-                          </select>
+                          <div className="relative flex-1 min-w-0">
+                            <select
+                              value={editAccountDraft.group_id ?? ''}
+                              onChange={(e) =>
+                                setEditAccountDraft((p) => ({
+                                  ...p,
+                                  group_id: e.target.value ? Number(e.target.value) : null,
+                                }))
+                              }
+                              className="w-full text-xs font-semibold text-text-primary bg-bg border border-border rounded-lg pl-2 pr-6 py-1 outline-none focus:border-accent cursor-pointer appearance-none"
+                            >
+                              <option value="" disabled>
+                                Select group
+                              </option>
+                              {accountGroups
+                                .slice()
+                                .sort((a, b) => a.sort_order - b.sort_order)
+                                .map((g) => (
+                                  <option key={g.id} value={g.id}>
+                                    {g.name}
+                                  </option>
+                                ))}
+                            </select>
+                            <ChevronDown
+                              size={12}
+                              className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted"
+                            />
+                          </div>
                         </div>
                       </div>
                       <button
@@ -1223,30 +1244,36 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
               Reassign existing transactions to another category (required if any exist):
             </p>
 
-            <select
-              value={deleteModal.reassignTo ?? ''}
-              onChange={(e) =>
-                setDeleteModal((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        reassignTo: e.target.value ? Number(e.target.value) : null,
-                        error: null,
-                      }
-                    : prev,
-                )
-              }
-              className="w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2.5 outline-none focus:border-accent mb-3 cursor-pointer"
-            >
-              <option value="">No reassignment (only if no transactions)</option>
-              {categories
-                .filter((c) => c.type === deleteModal.cat.type && c.id !== deleteModal.cat.id)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </select>
+            <div className="relative mb-3">
+              <select
+                value={deleteModal.reassignTo ?? ''}
+                onChange={(e) =>
+                  setDeleteModal((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          reassignTo: e.target.value ? Number(e.target.value) : null,
+                          error: null,
+                        }
+                      : prev,
+                  )
+                }
+                className="w-full text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] pl-3 pr-8 py-2.5 outline-none focus:border-accent cursor-pointer appearance-none"
+              >
+                <option value="">No reassignment (only if no transactions)</option>
+                {categories
+                  .filter((c) => c.type === deleteModal.cat.type && c.id !== deleteModal.cat.id)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+              </select>
+              <ChevronDown
+                size={14}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted"
+              />
+            </div>
 
             {deleteModal.error && <p className="text-xs text-expense mb-3">{deleteModal.error}</p>}
 
