@@ -21,7 +21,9 @@ export default function DailyView({ groups, settings }: Props) {
             {/* Day header */}
             <div className="flex items-baseline gap-2.5 mx-1.5 mb-2.5">
               <span className="font-extrabold text-base">{group.label}</span>
-              <span className="text-[13px] text-text-subtle">{group.date}</span>
+              {group.label !== group.date && (
+                <span className="text-[13px] text-text-subtle">{group.date}</span>
+              )}
               <span
                 className={[
                   'ml-auto font-bold text-sm tabular-nums whitespace-nowrap',
