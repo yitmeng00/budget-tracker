@@ -809,7 +809,9 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                   }
                   className="flex-1 text-sm font-semibold text-text-primary bg-bg border border-border rounded-[11px] px-3 py-2 outline-none focus:border-accent cursor-pointer"
                 >
-                  <option value="">No group</option>
+                  <option value="" disabled>
+                    Select group
+                  </option>
                   {accountGroups
                     .slice()
                     .sort((a, b) => a.sort_order - b.sort_order)
@@ -823,7 +825,11 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
               <div className="flex gap-2">
                 <button
                   onClick={submitAddAccount}
-                  disabled={!newAccountDraft.name.trim() || addAccountMutation.isPending}
+                  disabled={
+                    !newAccountDraft.name.trim() ||
+                    !newAccountDraft.group_id ||
+                    addAccountMutation.isPending
+                  }
                   className="px-4 py-2 rounded-[11px] bg-accent text-white text-xs font-bold border-0 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
                 >
                   Add Account
@@ -886,7 +892,9 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                             }
                             className="flex-1 min-w-0 text-xs font-semibold text-text-primary bg-bg border border-border rounded-lg px-2 py-1 outline-none focus:border-accent cursor-pointer"
                           >
-                            <option value="">No group</option>
+                            <option value="" disabled>
+                              Select group
+                            </option>
                             {accountGroups
                               .slice()
                               .sort((a, b) => a.sort_order - b.sort_order)
@@ -917,7 +925,7 @@ export default function SettingsPage({ year, month, settings, onUpdate }: Props)
                         <div className="text-sm font-semibold text-text-primary truncate">
                           {acc.name}
                         </div>
-                        <div className="text-xs text-text-muted">{groupName ?? 'No group'}</div>
+                        <div className="text-xs text-text-muted">{groupName}</div>
                       </div>
                       <span className="text-sm font-bold tabular-nums text-text-primary shrink-0">
                         {formatMoney(acc.balance, sym, pos)}

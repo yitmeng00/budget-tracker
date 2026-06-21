@@ -29,14 +29,7 @@ export default function AccountsPage({ settings }: Props) {
     .map((g) => ({ group: g, accounts: accounts.filter((a) => a.group_id === g.id) }))
     .filter((s) => s.accounts.length > 0);
 
-  const ungrouped = accounts.filter((a) => a.group_id === null);
-
-  const sections = [
-    ...grouped,
-    ...(ungrouped.length > 0
-      ? [{ group: { id: 0, name: 'Other', sort_order: 999 }, accounts: ungrouped }]
-      : []),
-  ];
+  const sections = grouped;
 
   return (
     <div className="flex flex-col gap-4">
