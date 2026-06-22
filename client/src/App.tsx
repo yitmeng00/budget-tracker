@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import Sidebar from './components/Sidebar.tsx';
+import BottomNav from './components/BottomNav.tsx';
 import Header from './components/Header.tsx';
 import TransactionsPage from './pages/TransactionsPage.tsx';
 import StatsPage from './pages/StatsPage.tsx';
@@ -66,7 +67,7 @@ function AppShell() {
           onAddTransaction={() => setShowAddModal(true)}
         />
 
-        <div className="flex-1 overflow-auto px-8.5 pt-2.5 pb-11">
+        <div className="flex-1 overflow-auto px-4 md:px-8.5 pt-2.5 pb-28 md:pb-11">
           {tab === 'transactions' && (
             <TransactionsPage year={year} month={month} settings={settings} />
           )}
@@ -77,6 +78,8 @@ function AppShell() {
           )}
         </div>
       </main>
+
+      <BottomNav activeTab={tab} onTabChange={setTab} />
 
       {showAddModal && (
         <AddTransactionModal onClose={() => setShowAddModal(false)} settings={settings} />

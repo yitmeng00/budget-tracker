@@ -28,13 +28,15 @@ export default function Header({
   const showAdd = tab === 'transactions';
 
   return (
-    <header className="flex items-center justify-between gap-4 px-8.5 pt-6.5 pb-4">
-      <div>
-        <div className="text-[25px] font-extrabold tracking-[-0.02em]">{title}</div>
-        <div className="text-sm text-text-muted mt-0.75">{subtitle}</div>
+    <header className="flex items-center justify-between gap-2 sm:gap-4 px-4 md:px-8.5 pt-5 md:pt-6.5 pb-4">
+      <div className="min-w-0">
+        <div className="text-[19px] sm:text-[21px] md:text-[25px] font-extrabold tracking-[-0.02em] truncate">
+          {title}
+        </div>
+        <div className="hidden md:block text-sm text-text-muted mt-0.75">{subtitle}</div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {showMonthNav && (
           <div className="flex items-center gap-0.5 bg-surface border border-border rounded-[14px] p-1.25">
             <button
@@ -56,10 +58,10 @@ export default function Header({
         {showAdd && (
           <button
             onClick={onAddTransaction}
-            className="flex items-center gap-2 bg-accent text-white border-0 rounded-[14px] px-4.5 py-2.75 font-bold text-sm cursor-pointer shadow-[0_8px_20px_color-mix(in_srgb,#2563eb_34%,transparent)] hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 bg-accent text-white border-0 rounded-[14px] px-3 md:px-4.5 py-2.75 font-bold text-sm cursor-pointer shadow-[0_8px_20px_color-mix(in_srgb,#2563eb_34%,transparent)] hover:opacity-90 transition-opacity"
           >
             <Plus size={18} />
-            Add transaction
+            <span className="hidden lg:inline">Add transaction</span>
           </button>
         )}
       </div>

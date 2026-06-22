@@ -22,7 +22,7 @@ export default function ViewSwitcher({ active, onChange, onSearchOpen }: Props) 
             key={key}
             onClick={() => onChange(key)}
             className={[
-              'px-4.5 py-2.25 rounded-[11px] text-[13.5px] font-semibold border-0 cursor-pointer transition-all duration-150',
+              'px-3 sm:px-4.5 py-2.25 rounded-[11px] text-[12px] sm:text-[13.5px] font-semibold border-0 cursor-pointer transition-all duration-150',
               active === key
                 ? 'bg-surface text-text-primary font-bold shadow-[0_2px_8px_rgba(37,99,235,0.12)]'
                 : 'bg-transparent text-text-muted hover:text-text-primary',
@@ -35,10 +35,10 @@ export default function ViewSwitcher({ active, onChange, onSearchOpen }: Props) 
 
       <button
         onClick={onSearchOpen}
-        className="flex items-center gap-2.25 bg-surface border border-border rounded-[13px] px-3.5 py-2.25 text-text-subtle text-[13.5px] font-medium hover:text-text-primary hover:border-accent/40 transition-colors cursor-pointer"
+        className="flex items-center gap-2 bg-surface border border-border rounded-[13px] px-3 sm:px-3.5 py-2.25 text-text-subtle text-[13.5px] font-medium hover:text-text-primary hover:border-accent/40 transition-colors cursor-pointer"
       >
         <Search size={15} />
-        Search
+        <span className="hidden sm:inline">Search</span>
       </button>
     </div>
   );

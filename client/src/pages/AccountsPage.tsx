@@ -69,7 +69,7 @@ export default function AccountsPage({ settings }: Props) {
                       <Icon size={17} style={{ color: account.color }} />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-bold text-text-primary truncate">
+                      <div className="text-sm font-bold text-text-primary leading-snug">
                         {account.name}
                       </div>
                       <div className="text-xs text-text-muted">{account.type}</div>
