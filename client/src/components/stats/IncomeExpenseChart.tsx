@@ -1,4 +1,4 @@
-import type { MonthlyBarData } from '../../lib/mockData.ts';
+import type { MonthlyBarData } from '../../types/index.ts';
 
 const BAR_MAX_PX = 120;
 

@@ -1,5 +1,5 @@
 import { formatSigned } from '../../lib/currency.ts';
-import type { RawDayGroup } from '../../lib/mockData.ts';
+import type { RawDayGroup } from '../../types/index.ts';
 import type { UserSettings } from '../../types/index.ts';
 
 interface Props {
