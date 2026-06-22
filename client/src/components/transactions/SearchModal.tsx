@@ -106,13 +106,16 @@ export default function SearchModal({ onClose, settings, onEdit }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-start justify-center pt-[8vh] px-4 pb-8"
+      className="fixed inset-0 z-40 flex items-end md:items-start justify-center md:pt-[8vh] md:px-4 md:pb-8"
       style={{ background: 'rgba(0,0,0,0.45)' }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-bg rounded-3xl shadow-2xl flex flex-col overflow-hidden"
-        style={{ maxHeight: '82vh' }}
+        className="w-full md:max-w-lg bg-bg rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        style={{
+          maxHeight: '90vh',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

@@ -34,7 +34,7 @@ export default function Sidebar({
   const monthName = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long' });
 
   return (
-    <aside className="w-66 shrink-0 bg-surface border-r border-border flex flex-col px-4.5 py-5.5">
+    <aside className="hidden md:flex w-56 shrink-0 bg-surface border-r border-border flex-col px-4.5 py-5.5">
       {/* Logo */}
       <div className="flex items-center gap-2.75 px-2 pb-6.5 pt-1.5">
         <img
