@@ -98,11 +98,11 @@ export const deleteTransaction = (id: number) => api.delete(`/transactions/${id}
 export const fetchMonthlyStats = () =>
   api.get<MonthlySummary[]>('/stats/monthly').then((r) => r.data);
 
-export const fetchCategoryStats = (year: number, month: number) =>
+export const fetchCategoryStats = (year: number, month?: number) =>
   api
     .get<
       { id: number; name: string; icon: string; color: string; total: number }[]
-    >('/stats/categories', { params: { year, month: month + 1 } })
+    >('/stats/categories', { params: month !== undefined ? { year, month: month + 1 } : { year } })
     .then((r) => r.data);
 
 // month is 1-indexed (as stored in DB)
