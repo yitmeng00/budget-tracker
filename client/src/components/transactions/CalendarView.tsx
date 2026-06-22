@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { UserSettings, WeekDay } from '../../types/index.ts';
-import type { CalendarDayData } from '../../lib/mockData.ts';
+import type { CalendarDayData } from '../../types/index.ts';
 import { formatMoney } from '../../lib/currency.ts';
 
 const ALL_DAYS: WeekDay[] = [

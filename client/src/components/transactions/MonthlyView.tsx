@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { UserSettings } from '../../types/index.ts';
-import type { MonthlyCategoryItem } from '../../lib/mockData.ts';
+import type { MonthlyCategoryItem } from '../../types/index.ts';
 import { formatMoney } from '../../lib/currency.ts';
 import { fetchBudgets } from '../../lib/api.ts';
 

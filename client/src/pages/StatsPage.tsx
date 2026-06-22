@@ -1,10 +1,10 @@
 import { useState, type ComponentType } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, CreditCard, PiggyBank, Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { UserSettings } from '../types/index.ts';
-import type { MonthlyBarData } from '../lib/mockData.ts';
+import type { MonthlyBarData, UserSettings } from '../types/index.ts';
 import { fetchMonthlyStats, fetchCategoryStats } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
+import { MONTH_SHORT } from '../lib/constants.ts';
 import IncomeExpenseChart from '../components/stats/IncomeExpenseChart.tsx';
 import TopCategories from '../components/stats/TopCategories.tsx';
 
@@ -39,21 +39,6 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
     </div>
   );
 }
-
-const MONTH_SHORT = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
 export default function StatsPage({ year, month, settings }: Props) {
   const [view, setView] = useState<StatsView>('monthly');

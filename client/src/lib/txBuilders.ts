@@ -1,21 +1,10 @@
-import type { ApiTransaction } from '../types/index.ts';
-import type { CalendarDayData, MonthlyCategoryItem, RawDayGroup } from './mockData.ts';
-
-const MONTH_LONG = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+import type {
+  ApiTransaction,
+  CalendarDayData,
+  MonthlyCategoryItem,
+  RawDayGroup,
+} from '../types/index.ts';
+import { DAY_SHORT, MONTH_LONG } from './constants.ts';
 
 export const formatTime = (time: string) => {
   const [h, m] = time.split(':').map(Number);

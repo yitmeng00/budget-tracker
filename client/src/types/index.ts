@@ -67,6 +67,44 @@ export interface BudgetEntry {
   override_amount: number | null;
 }
 
+export interface RawTransaction {
+  id: number;
+  icon: string;
+  cat: string;
+  note: string;
+  description: string | null;
+  time: string;
+  amt: number;
+  color: string;
+  accountId: number;
+}
+
+export interface RawDayGroup {
+  label: string;
+  date: string;
+  dateKey: string;
+  items: RawTransaction[];
+}
+
+export interface CalendarDayData {
+  income: number;
+  expense: number;
+}
+
+export interface MonthlyCategoryItem {
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+  amount: number;
+}
+
+export interface MonthlyBarData {
+  month: string;
+  income: number;
+  expense: number;
+}
+
 export interface ApiTransaction {
   id: number;
   account_id: number;
