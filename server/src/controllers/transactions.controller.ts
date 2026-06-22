@@ -34,10 +34,10 @@ export const createTransaction = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { account_id, category_id, amount, note, tx_date, tx_time } = req.body;
+    const { account_id, category_id, amount, note, description, tx_date, tx_time } = req.body;
     const [result] = (await pool.query(
-      'INSERT INTO transactions (account_id, category_id, amount, note, tx_date, tx_time) VALUES (?, ?, ?, ?, ?, ?)',
-      [account_id, category_id, amount, note ?? '', tx_date, tx_time ?? '00:00:00'],
+      'INSERT INTO transactions (account_id, category_id, amount, note, description, tx_date, tx_time) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [account_id, category_id, amount, note, description ?? null, tx_date, tx_time ?? '00:00:00'],
     )) as unknown as [{ insertId: number }];
     await pool.query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
       amount,
@@ -64,7 +64,7 @@ export const updateTransaction = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { account_id, category_id, amount, note, tx_date, tx_time } = req.body;
+    const { account_id, category_id, amount, note, description, tx_date, tx_time } = req.body;
     const [old] = (await pool.query('SELECT account_id, amount FROM transactions WHERE id = ?', [
       req.params.id,
     ])) as unknown as [{ account_id: number; amount: number }[]];
@@ -75,8 +75,8 @@ export const updateTransaction = async (
       ]);
     }
     await pool.query(
-      'UPDATE transactions SET account_id=?, category_id=?, amount=?, note=?, tx_date=?, tx_time=? WHERE id=?',
-      [account_id, category_id, amount, note, tx_date, tx_time, req.params.id],
+      'UPDATE transactions SET account_id=?, category_id=?, amount=?, note=?, description=?, tx_date=?, tx_time=? WHERE id=?',
+      [account_id, category_id, amount, note, description ?? null, tx_date, tx_time, req.params.id],
     );
     await pool.query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
       amount,

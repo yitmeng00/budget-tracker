@@ -10,9 +10,10 @@ const VIEWS: { key: TxView; label: string }[] = [
 interface Props {
   active: TxView;
   onChange: (v: TxView) => void;
+  onSearchOpen: () => void;
 }
 
-export default function ViewSwitcher({ active, onChange }: Props) {
+export default function ViewSwitcher({ active, onChange, onSearchOpen }: Props) {
   return (
     <div className="flex items-center justify-between mb-4.5">
       <div className="inline-flex gap-1 bg-border rounded-[15px] p-1.25">
@@ -32,10 +33,13 @@ export default function ViewSwitcher({ active, onChange }: Props) {
         ))}
       </div>
 
-      <div className="flex items-center gap-2.25 bg-surface border border-border rounded-[13px] px-3.5 py-2.25 text-text-subtle text-[13.5px] font-medium">
-        <Search size={16} />
-        Search transactions
-      </div>
+      <button
+        onClick={onSearchOpen}
+        className="flex items-center gap-2.25 bg-surface border border-border rounded-[13px] px-3.5 py-2.25 text-text-subtle text-[13.5px] font-medium hover:text-text-primary hover:border-accent/40 transition-colors cursor-pointer"
+      >
+        <Search size={15} />
+        Search
+      </button>
     </div>
   );
 }

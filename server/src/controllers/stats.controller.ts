@@ -16,7 +16,7 @@ export const getMonthlySummaries = async (
       FROM transactions
       GROUP BY YEAR(tx_date), MONTH(tx_date)
       ORDER BY year DESC, month DESC
-      LIMIT 12
+      LIMIT 36
     `);
     res.json(rows);
   } catch (err) {
@@ -31,18 +31,22 @@ export const getCategoryBreakdown = async (
 ): Promise<void> => {
   try {
     const { year, month } = req.query;
-    const [rows] = await pool.query(
-      `SELECT c.id, c.name, c.icon, c.color,
-              SUM(-t.amount) AS total
-       FROM transactions t
-       JOIN categories c ON t.category_id = c.id
-       WHERE t.amount < 0
-         AND YEAR(t.tx_date)  = ?
-         AND MONTH(t.tx_date) = ?
-       GROUP BY c.id, c.name, c.icon, c.color
-       ORDER BY total DESC`,
-      [Number(year), Number(month)],
-    );
+    const params: number[] = [Number(year)];
+    let sql = `SELECT c.id, c.name, c.icon, c.color,
+                      SUM(-t.amount) AS total
+               FROM transactions t
+               JOIN categories c ON t.category_id = c.id
+               WHERE t.amount < 0
+                 AND YEAR(t.tx_date) = ?`;
+
+    if (month !== undefined) {
+      sql += ' AND MONTH(t.tx_date) = ?';
+      params.push(Number(month));
+    }
+
+    sql += ' GROUP BY c.id, c.name, c.icon, c.color ORDER BY total DESC';
+
+    const [rows] = await pool.query(sql, params);
     res.json(rows);
   } catch (err) {
     next(err);

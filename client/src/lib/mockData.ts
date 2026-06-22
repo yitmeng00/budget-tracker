@@ -5,6 +5,7 @@ export interface RawTransaction {
   icon: string;
   cat: string;
   note: string;
+  description: string | null;
   time: string;
   amt: number;
   color: string;
@@ -33,6 +34,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         amt: -9.0,
         color: '#06b6d4',
         accountId: 4,
+        description: null,
       },
       {
         id: 6,
@@ -43,6 +45,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         amt: -12.5,
         color: '#7b5cf0',
         accountId: 1,
+        description: null,
       },
       {
         id: 7,
@@ -53,6 +56,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         amt: -65.8,
         color: '#22c55e',
         accountId: 3,
+        description: null,
       },
     ],
   },
@@ -66,6 +70,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         icon: 'briefcase',
         cat: 'Salary',
         note: 'Monthly salary — Acme Sdn Bhd',
+        description: null,
         time: '9:00 AM',
         amt: 5200.0,
         color: '#16a34a',
@@ -76,6 +81,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         icon: 'clapperboard',
         cat: 'Entertainment',
         note: 'Netflix subscription',
+        description: null,
         time: '11:00 AM',
         amt: -17.9,
         color: '#f43f5e',
@@ -86,6 +92,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         icon: 'coffee',
         cat: 'Food & Dining',
         note: 'ZUS Coffee',
+        description: null,
         time: '3:30 PM',
         amt: -9.9,
         color: '#7b5cf0',
@@ -96,6 +103,7 @@ export const MOCK_DAILY_GROUPS: RawDayGroup[] = [
         icon: 'fuel',
         cat: 'Transport',
         note: 'Shell petrol',
+        description: null,
         time: '6:00 PM',
         amt: -38.0,
         color: '#06b6d4',
@@ -175,6 +183,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'landmark',
     color: '#2563eb',
     balance: 12450.0,
+    group_id: null,
   },
   {
     id: 2,
@@ -183,6 +192,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'piggy-bank',
     color: '#16a34a',
     balance: 8320.5,
+    group_id: null,
   },
   {
     id: 3,
@@ -191,6 +201,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'wallet',
     color: '#06b6d4',
     balance: 285.4,
+    group_id: null,
   },
   {
     id: 4,
@@ -199,6 +210,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'credit-card',
     color: '#ef4444',
     balance: -1250.0,
+    group_id: null,
   },
   {
     id: 5,
@@ -207,6 +219,7 @@ export const MOCK_ACCOUNTS: Account[] = [
     icon: 'smartphone',
     color: '#22c55e',
     balance: 45.0,
+    group_id: null,
   },
 ];
 

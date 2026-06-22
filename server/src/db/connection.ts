@@ -9,6 +9,8 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   timezone: '+00:00',
+  decimalNumbers: true, // return DECIMAL columns as JS numbers, not strings
+  dateStrings: true, // return DATE/DATETIME columns as 'YYYY-MM-DD' strings, not Date objects
 });
 
 export default pool;

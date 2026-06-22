@@ -32,13 +32,52 @@ export const createCategory = async (
   }
 };
 
+export const updateCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { name, icon, color } = req.body;
+    await pool.query('UPDATE categories SET name=?, icon=?, color=? WHERE id=?', [
+      name,
+      icon,
+      color,
+      req.params.id,
+    ]);
+    const [rows] = await pool.query('SELECT * FROM categories WHERE id=?', [req.params.id]);
+    res.json((rows as unknown[])[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const deleteCategory = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    await pool.query('DELETE FROM categories WHERE id = ?', [req.params.id]);
+    const { id } = req.params;
+    const { reassignTo } = (req.body ?? {}) as { reassignTo?: number };
+
+    if (reassignTo !== undefined) {
+      await pool.query('UPDATE transactions SET category_id = ? WHERE category_id = ?', [
+        reassignTo,
+        id,
+      ]);
+    } else {
+      const [[row]] = (await pool.query(
+        'SELECT COUNT(*) AS count FROM transactions WHERE category_id = ?',
+        [id],
+      )) as unknown as [[{ count: number }]];
+      if (row.count > 0) {
+        res.status(409).json({ transactionCount: row.count });
+        return;
+      }
+    }
+
+    await pool.query('DELETE FROM categories WHERE id = ?', [id]);
     res.status(204).send();
   } catch (err) {
     next(err);

@@ -18,6 +18,12 @@ export interface Category {
   type: 'income' | 'expense';
 }
 
+export interface AccountGroup {
+  id: number;
+  name: string;
+  sort_order: number;
+}
+
 export interface Account {
   id: number;
   name: string;
@@ -25,6 +31,7 @@ export interface Account {
   icon: string;
   color: string;
   balance: number;
+  group_id: number | null;
 }
 
 export interface Transaction {
@@ -49,7 +56,28 @@ export interface UserSettings {
 
 export interface MonthlySummary {
   year: number;
-  month: number;
+  month: number; // 1-indexed (MySQL MONTH())
   income: number;
   expenses: number;
+}
+
+export interface BudgetEntry {
+  category_id: number;
+  default_amount: number | null;
+  override_amount: number | null;
+}
+
+export interface ApiTransaction {
+  id: number;
+  account_id: number;
+  category_id: number;
+  amount: number;
+  note: string;
+  description: string | null;
+  tx_date: string; // 'YYYY-MM-DD'
+  tx_time: string; // 'HH:mm:ss'
+  category_name: string;
+  category_icon: string;
+  category_color: string;
+  account_name: string;
 }

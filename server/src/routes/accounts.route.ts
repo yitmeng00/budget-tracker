@@ -16,6 +16,7 @@ const accountSchema = z.object({
   icon: z.string().optional(),
   color: z.string().optional(),
   balance: z.number().optional(),
+  group_id: z.number().int().positive().nullable().optional(),
 });
 
 router.get('/', getAccounts);
