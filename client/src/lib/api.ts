@@ -63,9 +63,11 @@ export const postAccount = (body: {
   group_id?: number | null;
 }) => api.post<Account>('/accounts', body).then((r) => r.data);
 
-export const fetchTransactions = (year: number, month: number) =>
+export const fetchTransactions = (year?: number, month?: number) =>
   api
-    .get<ApiTransaction[]>('/transactions', { params: { year, month: month + 1 } })
+    .get<
+      ApiTransaction[]
+    >('/transactions', year !== undefined && month !== undefined ? { params: { year, month: month + 1 } } : undefined)
     .then((r) => r.data);
 
 export const postTransaction = (body: {

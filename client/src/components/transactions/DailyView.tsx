@@ -11,6 +11,14 @@ interface Props {
 export default function DailyView({ groups, settings, onEdit }: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
+  if (groups.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-text-muted">
+        <p className="text-sm font-medium">No transactions found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {groups.map((group) => {
