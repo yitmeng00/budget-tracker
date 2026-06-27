@@ -8,7 +8,7 @@ import StatsPage from './pages/StatsPage.tsx';
 import AccountsPage from './pages/AccountsPage.tsx';
 import SettingsPage from './pages/SettingsPage.tsx';
 import AddTransactionModal from './components/transactions/AddTransactionModal.tsx';
-import type { Tab, TxView } from './types/index.ts';
+import type { Tab, TxView, StatsView } from './types/index.ts';
 import { useSettings } from './hooks/useSettings.ts';
 import { useMonth } from './hooks/useMonth.ts';
 import { fetchTransactions, fetchBudgets, fetchMonthlyStats } from './lib/api.ts';
@@ -21,9 +21,11 @@ function AppShell() {
   const [tab, setTab] = useState<Tab>('transactions');
   const [showAddModal, setShowAddModal] = useState(false);
   const [txView, setTxView] = useState<TxView>('daily');
+  const [statsView, setStatsView] = useState<StatsView>('monthly');
   const { settings, update } = useSettings();
   const { year, month, label: monthLabel, prev, next } = useMonth();
   const [viewYear, setViewYear] = useState(year);
+  const [statsYear, setStatsYear] = useState(year);
 
   // Same query keys as TransactionsPage/MonthlyView — React Query serves cached data.
   const { data: txs = [] } = useQuery({
@@ -76,10 +78,15 @@ function AppShell() {
           onNextMonth={next}
           onAddTransaction={() => setShowAddModal(true)}
           txView={txView}
-          viewYear={viewYear}
+          statsView={statsView}
+          viewYear={tab === 'stats' ? statsYear : viewYear}
           minYear={minYear}
-          onPrevYear={() => setViewYear((y) => y - 1)}
-          onNextYear={() => setViewYear((y) => y + 1)}
+          onPrevYear={
+            tab === 'stats' ? () => setStatsYear((y) => y - 1) : () => setViewYear((y) => y - 1)
+          }
+          onNextYear={
+            tab === 'stats' ? () => setStatsYear((y) => y + 1) : () => setViewYear((y) => y + 1)
+          }
         />
 
         <div className="flex-1 overflow-auto px-4 md:px-8.5 pt-2.5 pb-28 md:pb-11">
@@ -93,7 +100,16 @@ function AppShell() {
               viewYear={viewYear}
             />
           )}
-          {tab === 'stats' && <StatsPage year={year} month={month} settings={settings} />}
+          {tab === 'stats' && (
+            <StatsPage
+              year={year}
+              month={month}
+              settings={settings}
+              view={statsView}
+              onViewChange={setStatsView}
+              annualYear={statsYear}
+            />
+          )}
           {tab === 'accounts' && <AccountsPage settings={settings} />}
           {tab === 'settings' && (
             <SettingsPage year={year} month={month} settings={settings} onUpdate={update} />
