@@ -14,7 +14,6 @@ export type WeekDay =
 export interface Category {
   id: number;
   name: string;
-  color: string;
   icon: string;
   type: 'income' | 'expense';
 }
@@ -76,7 +75,6 @@ export interface RawTransaction {
   description: string | null;
   time: string;
   amt: number;
-  color: string;
   accountId: number;
 }
 
@@ -96,7 +94,6 @@ export interface MonthlyCategoryItem {
   id: number;
   name: string;
   icon: string;
-  color: string;
   amount: number;
 }
 
@@ -117,6 +114,5 @@ export interface ApiTransaction {
   tx_time: string; // 'HH:mm:ss'
   category_name: string;
   category_icon: string;
-  category_color: string;
   account_name: string;
 }

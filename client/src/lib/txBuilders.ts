@@ -1,9 +1,4 @@
-import type {
-  ApiTransaction,
-  CalendarDayData,
-  MonthlyCategoryItem,
-  RawDayGroup,
-} from '../types/index.ts';
+import type { ApiTransaction, CalendarDayData, RawDayGroup } from '../types/index.ts';
 import { DAY_SHORT, MONTH_LONG } from './constants.ts';
 
 export const formatTime = (time: string) => {
@@ -53,7 +48,6 @@ export const buildDailyGroups = (txs: ApiTransaction[]): RawDayGroup[] => {
       description: tx.description,
       time: formatTime(tx.tx_time),
       amt: tx.amount,
-      color: tx.category_color,
       accountId: tx.account_id,
     })),
   }));
@@ -67,23 +61,4 @@ export const buildCalendarData = (txs: ApiTransaction[]): Record<string, Calenda
     else result[tx.tx_date].expense += tx.amount;
   }
   return result;
-};
-
-export const buildMonthlyCategories = (txs: ApiTransaction[]): MonthlyCategoryItem[] => {
-  const map = new Map<number, MonthlyCategoryItem>();
-  for (const tx of txs) {
-    const existing = map.get(tx.category_id);
-    if (existing) {
-      existing.amount += tx.amount;
-    } else {
-      map.set(tx.category_id, {
-        id: tx.category_id,
-        name: tx.category_name,
-        icon: tx.category_icon,
-        color: tx.category_color,
-        amount: tx.amount,
-      });
-    }
-  }
-  return Array.from(map.values());
 };

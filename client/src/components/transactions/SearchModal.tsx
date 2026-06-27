@@ -4,6 +4,7 @@ import { Filter, Search, X } from 'lucide-react';
 import { fetchTransactions } from '../../lib/api.ts';
 import { buildFullDateLabel } from '../../lib/txBuilders.ts';
 import { formatSigned } from '../../lib/currency.ts';
+import { categoryColor } from '../../lib/constants.ts';
 import type { ApiTransaction, UserSettings } from '../../types/index.ts';
 
 interface Props {
@@ -47,13 +48,12 @@ export default function SearchModal({ onClose, settings, onEdit }: Props) {
   }, [onClose]);
 
   const availableCategories = useMemo(() => {
-    const seen = new Map<number, { id: number; name: string; color: string }>();
+    const seen = new Map<number, { id: number; name: string }>();
     for (const tx of allTxs) {
       if (!seen.has(tx.category_id)) {
         seen.set(tx.category_id, {
           id: tx.category_id,
           name: tx.category_name,
-          color: tx.category_color,
         });
       }
     }
@@ -212,7 +212,7 @@ export default function SearchModal({ onClose, settings, onEdit }: Props) {
                         <button
                           key={cat.id}
                           onClick={() => toggleCategory(cat.id)}
-                          style={active ? { background: cat.color } : undefined}
+                          style={active ? { background: categoryColor(cat.id) } : undefined}
                           className={[
                             'px-3 py-1.5 rounded-[9px] text-xs font-semibold border cursor-pointer transition-colors',
                             active

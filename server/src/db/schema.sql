@@ -27,23 +27,24 @@ CREATE TABLE IF NOT EXISTS categories (
   name  VARCHAR(100) NOT NULL,
   type  ENUM('income','expense') NOT NULL,
   icon  VARCHAR(50)  NOT NULL DEFAULT 'tag',
-  color VARCHAR(20)  NOT NULL DEFAULT '#7b5cf0',
   UNIQUE KEY uq_name_type (name, type)
 );
 
-INSERT IGNORE INTO categories (name, type, icon, color) VALUES
-  ('Salary',       'income',  'briefcase',    '#16a34a'),
-  ('Freelance',    'income',  'laptop',       '#22c55e'),
-  ('Investment',   'income',  'trending-up',  '#06b6d4'),
-  ('Gift',         'income',  'gift',         '#f59e0b'),
-  ('Refund',       'income',  'rotate-ccw',   '#7b5cf0'),
-  ('Food & Dining','expense', 'utensils',     '#7b5cf0'),
-  ('Transport',    'expense', 'car',          '#06b6d4'),
-  ('Shopping',     'expense', 'shopping-bag', '#f59e0b'),
-  ('Groceries',    'expense', 'shopping-cart','#22c55e'),
-  ('Bills',        'expense', 'receipt',      '#ec4899'),
-  ('Entertainment','expense', 'clapperboard', '#f43f5e'),
-  ('Health',       'expense', 'heart-pulse',  '#14b8a6');
+ALTER TABLE categories DROP COLUMN IF EXISTS color;
+
+INSERT IGNORE INTO categories (name, type, icon) VALUES
+  ('Salary',       'income',  'briefcase'),
+  ('Freelance',    'income',  'laptop'),
+  ('Investment',   'income',  'trending-up'),
+  ('Gift',         'income',  'gift'),
+  ('Refund',       'income',  'rotate-ccw'),
+  ('Food & Dining','expense', 'utensils'),
+  ('Transport',    'expense', 'car'),
+  ('Shopping',     'expense', 'shopping-bag'),
+  ('Groceries',    'expense', 'shopping-cart'),
+  ('Bills',        'expense', 'receipt'),
+  ('Entertainment','expense', 'clapperboard'),
+  ('Health',       'expense', 'heart-pulse');
 
 -- ─── Account Groups ───────────────────────────────────────────────────────────
 

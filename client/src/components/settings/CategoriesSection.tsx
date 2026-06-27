@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Check, Pencil, Plus, Trash2, X, ChevronDown } from 'lucide-react';
 import type { Category } from '../../types/index.ts';
 import { fetchCategories, postCategory, patchCategory, deleteCategory } from '../../lib/api.ts';
-import { AUTO_COLORS } from '../../lib/constants.ts';
 import SettingCard from '../ui/SettingCard.tsx';
 
 export default function CategoriesSection() {
@@ -22,7 +21,7 @@ export default function CategoriesSection() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, cat }: { id: number; cat: Category }) =>
-      patchCategory(id, { name: editName.trim(), icon: cat.icon, color: cat.color }),
+      patchCategory(id, { name: editName.trim(), icon: cat.icon }),
     onSuccess: invalidate,
   });
 
@@ -43,7 +42,7 @@ export default function CategoriesSection() {
   const [newCatName, setNewCatName] = useState('');
 
   const addMutation = useMutation({
-    mutationFn: (body: { name: string; type: 'income' | 'expense'; icon: string; color: string }) =>
+    mutationFn: (body: { name: string; type: 'income' | 'expense'; icon: string }) =>
       postCategory(body),
     onSuccess: invalidate,
   });
@@ -54,8 +53,7 @@ export default function CategoriesSection() {
   };
   const addCategory = () => {
     if (!newCatName.trim() || !showAddType) return;
-    const color = AUTO_COLORS[categories.length % AUTO_COLORS.length];
-    addMutation.mutate({ name: newCatName.trim(), type: showAddType, icon: 'tag', color });
+    addMutation.mutate({ name: newCatName.trim(), type: showAddType, icon: 'tag' });
     setShowAddType(null);
   };
 
