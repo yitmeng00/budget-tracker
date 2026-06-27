@@ -20,10 +20,10 @@ export const createCategory = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { name, type, icon, color } = req.body;
+    const { name, type, icon } = req.body;
     const [result] = (await pool.query(
-      'INSERT INTO categories (name, type, icon, color) VALUES (?, ?, ?, ?)',
-      [name, type, icon ?? 'tag', color ?? '#2563eb'],
+      'INSERT INTO categories (name, type, icon) VALUES (?, ?, ?)',
+      [name, type, icon ?? 'tag'],
     )) as unknown as [{ insertId: number }];
     const [rows] = await pool.query('SELECT * FROM categories WHERE id = ?', [result.insertId]);
     res.status(201).json((rows as unknown[])[0]);
@@ -38,11 +38,10 @@ export const updateCategory = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { name, icon, color } = req.body;
-    await pool.query('UPDATE categories SET name=?, icon=?, color=? WHERE id=?', [
+    const { name, icon } = req.body;
+    await pool.query('UPDATE categories SET name=?, icon=? WHERE id=?', [
       name,
       icon,
-      color,
       req.params.id,
     ]);
     const [rows] = await pool.query('SELECT * FROM categories WHERE id=?', [req.params.id]);

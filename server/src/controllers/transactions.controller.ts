@@ -9,8 +9,7 @@ export const getTransactions = async (
   try {
     const { year, month } = req.query;
     let sql = `
-      SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.color AS category_color,
-             a.name AS account_name
+      SELECT t.*, c.name AS category_name, c.icon AS category_icon,              a.name AS account_name
       FROM transactions t
       JOIN categories c ON t.category_id = c.id
       JOIN accounts   a ON t.account_id  = a.id
@@ -44,8 +43,7 @@ export const createTransaction = async (
       account_id,
     ]);
     const [rows] = await pool.query(
-      `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.color AS category_color,
-              a.name AS account_name
+      `SELECT t.*, c.name AS category_name, c.icon AS category_icon,               a.name AS account_name
        FROM transactions t
        JOIN categories c ON t.category_id = c.id
        JOIN accounts   a ON t.account_id  = a.id
@@ -83,8 +81,7 @@ export const updateTransaction = async (
       account_id,
     ]);
     const [rows] = await pool.query(
-      `SELECT t.*, c.name AS category_name, c.icon AS category_icon, c.color AS category_color,
-              a.name AS account_name
+      `SELECT t.*, c.name AS category_name, c.icon AS category_icon,               a.name AS account_name
        FROM transactions t
        JOIN categories c ON t.category_id = c.id
        JOIN accounts   a ON t.account_id  = a.id

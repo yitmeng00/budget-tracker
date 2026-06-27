@@ -23,14 +23,10 @@ export const patchSettings = (settings: UserSettings) =>
 
 export const fetchCategories = () => api.get<Category[]>('/categories').then((r) => r.data);
 
-export const postCategory = (body: {
-  name: string;
-  type: 'income' | 'expense';
-  icon: string;
-  color: string;
-}) => api.post<Category>('/categories', body).then((r) => r.data);
+export const postCategory = (body: { name: string; type: 'income' | 'expense'; icon: string }) =>
+  api.post<Category>('/categories', body).then((r) => r.data);
 
-export const patchCategory = (id: number, body: { name: string; icon: string; color: string }) =>
+export const patchCategory = (id: number, body: { name: string; icon: string }) =>
   api.patch<Category>(`/categories/${id}`, body).then((r) => r.data);
 
 export const deleteCategory = (id: number, reassignTo?: number) =>

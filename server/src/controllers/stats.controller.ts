@@ -32,7 +32,7 @@ export const getCategoryBreakdown = async (
   try {
     const { year, month } = req.query;
     const params: number[] = [Number(year)];
-    let sql = `SELECT c.id, c.name, c.icon, c.color, c.type,
+    let sql = `SELECT c.id, c.name, c.icon, c.type,
                       SUM(ABS(t.amount)) AS total
                FROM transactions t
                JOIN categories c ON t.category_id = c.id
@@ -43,7 +43,7 @@ export const getCategoryBreakdown = async (
       params.push(Number(month));
     }
 
-    sql += ' GROUP BY c.id, c.name, c.icon, c.color, c.type ORDER BY c.type DESC, total DESC';
+    sql += ' GROUP BY c.id, c.name, c.icon, c.type ORDER BY c.type DESC, total DESC';
 
     const [rows] = await pool.query(sql, params);
     res.json(rows);
