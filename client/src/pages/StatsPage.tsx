@@ -1,7 +1,7 @@
-import { useState, type ComponentType } from 'react';
+import { type ComponentType } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, CreditCard, PiggyBank, Wallet, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { MonthlyBarData, UserSettings } from '../types/index.ts';
+import { TrendingUp, CreditCard, PiggyBank, Wallet } from 'lucide-react';
+import type { MonthlyBarData, StatsView, UserSettings } from '../types/index.ts';
 import { fetchMonthlyStats, fetchCategoryStats } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
 import { MONTH_SHORT } from '../lib/constants.ts';
@@ -12,9 +12,10 @@ interface Props {
   year: number;
   month: number; // 0-indexed
   settings: UserSettings;
+  view: StatsView;
+  onViewChange: (v: StatsView) => void;
+  annualYear: number;
 }
-
-type StatsView = 'monthly' | 'annual';
 
 type IconComponent = ComponentType<{ size?: number; color?: string }>;
 
@@ -40,9 +41,14 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
   );
 }
 
-export default function StatsPage({ year, month, settings }: Props) {
-  const [view, setView] = useState<StatsView>('monthly');
-  const [annualYear, setAnnualYear] = useState(year);
+export default function StatsPage({
+  year,
+  month,
+  settings,
+  view,
+  onViewChange,
+  annualYear,
+}: Props) {
   const { currency_symbol: sym, unit_position: pos } = settings;
 
   const { data: monthlySummaries = [] } = useQuery({
@@ -102,9 +108,6 @@ export default function StatsPage({ year, month, settings }: Props) {
     };
   });
 
-  const minYear =
-    monthlySummaries.length > 0 ? Math.min(...monthlySummaries.map((r) => r.year)) : annualYear;
-
   const totalIncome = view === 'annual' ? annualIncome : monthlyIncome;
   const totalExpenses = view === 'annual' ? annualExpenses : monthlyExpenses;
   const net = view === 'annual' ? annualNet : monthlyNet;
@@ -122,13 +125,13 @@ export default function StatsPage({ year, month, settings }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* View toggle + year navigation */}
+      {/* View toggle + annual year navigation */}
       <div className="flex items-center gap-3">
         <div className="inline-flex gap-1 bg-border rounded-[15px] p-1.25">
           {(['monthly', 'annual'] as const).map((v) => (
             <button
               key={v}
-              onClick={() => setView(v)}
+              onClick={() => onViewChange(v)}
               className={[
                 'px-4.5 py-2.25 rounded-[11px] text-[13.5px] font-semibold border-0 cursor-pointer transition-all duration-150',
                 view === v
@@ -140,28 +143,6 @@ export default function StatsPage({ year, month, settings }: Props) {
             </button>
           ))}
         </div>
-
-        {view === 'annual' && (
-          <div className="flex items-center gap-1 bg-surface border border-border rounded-[13px] px-2 py-1.5">
-            <button
-              onClick={() => setAnnualYear((y) => y - 1)}
-              disabled={annualYear <= minYear}
-              className="p-1 rounded-[7px] text-text-muted hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            >
-              <ChevronLeft size={15} />
-            </button>
-            <span className="text-[13.5px] font-bold text-text-primary tabular-nums w-10 text-center">
-              {annualYear}
-            </span>
-            <button
-              onClick={() => setAnnualYear((y) => y + 1)}
-              disabled={annualYear >= year}
-              className="p-1 rounded-[7px] text-text-muted hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            >
-              <ChevronRight size={15} />
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

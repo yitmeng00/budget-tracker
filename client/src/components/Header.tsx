@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
-import type { Tab, TxView } from '../types/index.ts';
+import type { Tab, TxView, StatsView } from '../types/index.ts';
 
 const PAGE_META: Record<Tab, { title: string; subtitle: string }> = {
   transactions: { title: 'Transactions', subtitle: 'Track your daily money flow' },
@@ -15,6 +15,7 @@ interface Props {
   onNextMonth: () => void;
   onAddTransaction: () => void;
   txView?: TxView;
+  statsView?: StatsView;
   viewYear?: number;
   minYear?: number;
   onPrevYear?: () => void;
@@ -28,15 +29,19 @@ export default function Header({
   onNextMonth,
   onAddTransaction,
   txView,
+  statsView,
   viewYear,
   minYear,
   onPrevYear,
   onNextYear,
 }: Props) {
   const { title, subtitle } = PAGE_META[tab];
-  const showMonthNav = tab === 'transactions' || tab === 'stats';
   const showAdd = tab === 'transactions';
-  const showYearNav = showMonthNav && txView === 'monthly';
+
+  const showYearNav =
+    (tab === 'transactions' && txView === 'monthly') || (tab === 'stats' && statsView === 'annual');
+  const showMonthNav =
+    (tab === 'transactions' && txView !== 'monthly') || (tab === 'stats' && statsView !== 'annual');
 
   return (
     <header className="flex items-center justify-between gap-2 sm:gap-4 px-4 md:px-8.5 pt-5 md:pt-6.5 pb-4">
@@ -48,7 +53,7 @@ export default function Header({
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {showMonthNav && !showYearNav && (
+        {showMonthNav && (
           <div className="flex items-center gap-0.5 bg-surface border border-border rounded-[14px] p-1.25">
             <button
               onClick={onPrevMonth}
