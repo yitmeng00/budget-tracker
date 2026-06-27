@@ -2,7 +2,7 @@ import { type ComponentType } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, CreditCard, PiggyBank, Wallet } from 'lucide-react';
 import type { MonthlyBarData, StatsView, UserSettings } from '../types/index.ts';
-import { fetchMonthlyStats, fetchCategoryStats } from '../lib/api.ts';
+import { fetchMonthlyStats, fetchCategoryStats, fetchBudgets } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
 import { MONTH_SHORT } from '../lib/constants.ts';
 import IncomeExpenseChart from '../components/stats/IncomeExpenseChart.tsx';
@@ -68,6 +68,18 @@ export default function StatsPage({
     enabled: view === 'annual',
   });
 
+  const { data: budgets = [] } = useQuery({
+    queryKey: ['budgets', year, month + 1],
+    queryFn: () => fetchBudgets(year, month + 1),
+    enabled: view === 'monthly',
+  });
+
+  const budgetMap = new Map(
+    budgets
+      .filter((b) => (b.override_amount ?? b.default_amount) !== null)
+      .map((b) => [b.category_id, (b.override_amount ?? b.default_amount)!]),
+  );
+
   // Monthly view data
   const monthlyBars: MonthlyBarData[] = Array.from({ length: 6 }, (_, i) => {
     const offset = 5 - i;
@@ -119,7 +131,6 @@ export default function StatsPage({
   const toItem = (c: (typeof rawCategories)[0]) => ({
     id: c.id,
     name: c.name,
-    color: c.color,
     amount: Number(c.total),
   });
   const incomeCategories = rawCategories.filter((c) => c.type === 'income').map(toItem);
@@ -179,6 +190,7 @@ export default function StatsPage({
         income={incomeCategories}
         expenses={expenseCategories}
         settings={settings}
+        budgetMap={view === 'monthly' ? budgetMap : undefined}
       />
     </div>
   );

@@ -30,6 +30,8 @@ export const MONTH_LONG = [
 
 export const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+export const categoryColor = (id: number) => AUTO_COLORS[id % AUTO_COLORS.length];
+
 export const AUTO_COLORS = [
   '#7b5cf0',
   '#2563eb',
