@@ -101,7 +101,14 @@ export const fetchMonthlyStats = () =>
 export const fetchCategoryStats = (year: number, month?: number) =>
   api
     .get<
-      { id: number; name: string; icon: string; color: string; total: number }[]
+      {
+        id: number;
+        name: string;
+        icon: string;
+        color: string;
+        type: 'income' | 'expense';
+        total: number;
+      }[]
     >('/stats/categories', { params: month !== undefined ? { year, month: month + 1 } : { year } })
     .then((r) => r.data);
 

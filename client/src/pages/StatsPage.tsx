@@ -6,7 +6,7 @@ import { fetchMonthlyStats, fetchCategoryStats } from '../lib/api.ts';
 import { formatMoney } from '../lib/currency.ts';
 import { MONTH_SHORT } from '../lib/constants.ts';
 import IncomeExpenseChart from '../components/stats/IncomeExpenseChart.tsx';
-import TopCategories from '../components/stats/TopCategories.tsx';
+import CategoryBreakdown from '../components/stats/CategoryBreakdown.tsx';
 
 interface Props {
   year: number;
@@ -116,12 +116,14 @@ export default function StatsPage({
   const bars = view === 'annual' ? annualBars : monthlyBars;
 
   const rawCategories = view === 'annual' ? annualCategoryBreakdown : monthCategoryBreakdown;
-  const topCats = rawCategories.map((c) => ({
+  const toItem = (c: (typeof rawCategories)[0]) => ({
     id: c.id,
     name: c.name,
     color: c.color,
     amount: Number(c.total),
-  }));
+  });
+  const incomeCategories = rawCategories.filter((c) => c.type === 'income').map(toItem);
+  const expenseCategories = rawCategories.filter((c) => c.type === 'expense').map(toItem);
 
   return (
     <div className="flex flex-col gap-4">
@@ -172,8 +174,12 @@ export default function StatsPage({
         />
       </div>
 
-      <IncomeExpenseChart bars={bars} />
-      <TopCategories categories={topCats} settings={settings} />
+      <IncomeExpenseChart bars={bars} settings={settings} />
+      <CategoryBreakdown
+        income={incomeCategories}
+        expenses={expenseCategories}
+        settings={settings}
+      />
     </div>
   );
 }
