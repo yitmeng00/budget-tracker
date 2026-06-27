@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
-import type { Tab } from '../types/index.ts';
+import type { Tab, TxView } from '../types/index.ts';
 
 const PAGE_META: Record<Tab, { title: string; subtitle: string }> = {
   transactions: { title: 'Transactions', subtitle: 'Track your daily money flow' },
@@ -14,6 +14,11 @@ interface Props {
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onAddTransaction: () => void;
+  txView?: TxView;
+  viewYear?: number;
+  minYear?: number;
+  onPrevYear?: () => void;
+  onNextYear?: () => void;
 }
 
 export default function Header({
@@ -22,10 +27,16 @@ export default function Header({
   onPrevMonth,
   onNextMonth,
   onAddTransaction,
+  txView,
+  viewYear,
+  minYear,
+  onPrevYear,
+  onNextYear,
 }: Props) {
   const { title, subtitle } = PAGE_META[tab];
   const showMonthNav = tab === 'transactions' || tab === 'stats';
   const showAdd = tab === 'transactions';
+  const showYearNav = showMonthNav && txView === 'monthly';
 
   return (
     <header className="flex items-center justify-between gap-2 sm:gap-4 px-4 md:px-8.5 pt-5 md:pt-6.5 pb-4">
@@ -37,7 +48,7 @@ export default function Header({
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {showMonthNav && (
+        {showMonthNav && !showYearNav && (
           <div className="flex items-center gap-0.5 bg-surface border border-border rounded-[14px] p-1.25">
             <button
               onClick={onPrevMonth}
@@ -49,6 +60,26 @@ export default function Header({
             <button
               onClick={onNextMonth}
               className="w-8 h-8 border-0 bg-transparent rounded-[10px] text-text-muted cursor-pointer flex items-center justify-center hover:bg-bg transition-colors"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        )}
+
+        {showYearNav && viewYear !== undefined && (
+          <div className="flex items-center gap-0.5 bg-surface border border-border rounded-[14px] p-1.25">
+            <button
+              onClick={onPrevYear}
+              disabled={minYear !== undefined && viewYear <= minYear}
+              className="w-8 h-8 border-0 bg-transparent rounded-[10px] text-text-muted cursor-pointer flex items-center justify-center hover:bg-bg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <span className="font-bold text-sm px-2 tabular-nums">{viewYear}</span>
+            <button
+              onClick={onNextYear}
+              disabled={viewYear >= new Date().getFullYear()}
+              className="w-8 h-8 border-0 bg-transparent rounded-[10px] text-text-muted cursor-pointer flex items-center justify-center hover:bg-bg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRight size={18} />
             </button>
