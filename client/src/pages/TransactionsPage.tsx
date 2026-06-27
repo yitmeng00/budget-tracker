@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { TxView, UserSettings, ApiTransaction } from '../types/index.ts';
 import { deleteTransaction, fetchTransactions } from '../lib/api.ts';
-import { buildCalendarData, buildDailyGroups, buildMonthlyCategories } from '../lib/txBuilders.ts';
+import { buildCalendarData, buildDailyGroups } from '../lib/txBuilders.ts';
 import SummaryCards from '../components/transactions/SummaryCards.tsx';
 import ViewSwitcher from '../components/transactions/ViewSwitcher.tsx';
 import DailyView from '../components/transactions/DailyView.tsx';
@@ -15,10 +15,19 @@ interface Props {
   year: number;
   month: number; // 0-indexed
   settings: UserSettings;
+  view: TxView;
+  onViewChange: (v: TxView) => void;
+  viewYear: number;
 }
 
-export default function TransactionsPage({ year, month, settings }: Props) {
-  const [view, setView] = useState<TxView>('daily');
+export default function TransactionsPage({
+  year,
+  month,
+  settings,
+  view,
+  onViewChange,
+  viewYear,
+}: Props) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [editTx, setEditTx] = useState<ApiTransaction | null>(null);
 
@@ -48,13 +57,18 @@ export default function TransactionsPage({ year, month, settings }: Props) {
 
   const dailyGroups = buildDailyGroups(txs);
   const calendarData = buildCalendarData(txs);
-  const monthlyCategories = buildMonthlyCategories(txs);
 
   return (
     <>
       <div>
-        <SummaryCards income={totalIncome} expenses={totalExpenses} settings={settings} />
-        <ViewSwitcher active={view} onChange={setView} onSearchOpen={() => setSearchOpen(true)} />
+        {view !== 'monthly' && (
+          <SummaryCards income={totalIncome} expenses={totalExpenses} settings={settings} />
+        )}
+        <ViewSwitcher
+          active={view}
+          onChange={onViewChange}
+          onSearchOpen={() => setSearchOpen(true)}
+        />
 
         {view === 'daily' && (
           <DailyView groups={dailyGroups} settings={settings} onEdit={handleEdit} />
@@ -70,10 +84,10 @@ export default function TransactionsPage({ year, month, settings }: Props) {
         )}
         {view === 'monthly' && (
           <MonthlyView
-            year={year}
-            month={month}
-            categories={monthlyCategories}
+            key={viewYear}
+            year={viewYear}
             settings={settings}
+            onEdit={(tx) => setEditTx(tx)}
           />
         )}
       </div>
