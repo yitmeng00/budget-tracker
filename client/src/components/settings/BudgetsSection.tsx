@@ -54,9 +54,6 @@ export default function BudgetsSection({ year, month, settings }: Props) {
     queryFn: () => fetchBudgets(budgetYear, budgetApiMonth),
   });
 
-  const nextApiMonth = budgetApiMonth === 12 ? 1 : budgetApiMonth + 1;
-  const nextYear = budgetApiMonth === 12 ? budgetYear + 1 : budgetYear;
-  const nextMonthLabel = `${MONTH_SHORT[nextApiMonth - 1]} ${nextYear}`;
   const currentMonthLabel = `${MONTH_SHORT[budgetMonth]} ${budgetYear}`;
 
   const invalidateAll = () => queryClient.invalidateQueries({ queryKey: ['budgets'] });
@@ -303,11 +300,11 @@ export default function BudgetsSection({ year, month, settings }: Props) {
             ) : (
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={() => handleSetDefault(nextYear, nextApiMonth)}
+                  onClick={() => handleSetDefault(budgetYear, budgetApiMonth)}
                   disabled={!modalAmountValid}
                   className="w-full py-3 rounded-[13px] bg-accent text-white text-sm font-bold border-0 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
                 >
-                  Update default from {nextMonthLabel} →
+                  Update default from {currentMonthLabel} onwards
                 </button>
                 <button
                   onClick={handleOverrideMonth}
