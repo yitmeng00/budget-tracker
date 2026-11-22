@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 
 export const errorHandler = (
   err: unknown,
@@ -8,7 +8,7 @@ export const errorHandler = (
   _next: NextFunction,
 ): void => {
   if (err instanceof ZodError) {
-    res.status(400).json({ error: 'Validation error', details: err.flatten().fieldErrors });
+    res.status(400).json({ error: 'Validation error', details: z.flattenError(err).fieldErrors });
     return;
   }
   console.error(err);
