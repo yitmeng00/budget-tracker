@@ -57,14 +57,14 @@ A personal finance tracker for monitoring income, expenses, budgets, and account
 
 ## Tech Stack
 
-| Layer    | Technology                                  |
-| -------- | ------------------------------------------- |
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS v4 |
-| State    | TanStack React Query v5                     |
-| Icons    | Lucide React                                |
-| Backend  | Node.js, Express 5, TypeScript              |
-| Database | MySQL 8.4                                   |
-| Infra    | Docker Compose                              |
+| Layer    | Technology                                    |
+| -------- | --------------------------------------------- |
+| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS v4 |
+| State    | TanStack React Query v5                       |
+| Icons    | Lucide React                                  |
+| Backend  | Node.js, Express 5, TypeScript, Zod 4         |
+| Database | MySQL 8.4                                     |
+| Infra    | Docker Compose                                |
 
 ---
 
@@ -80,14 +80,15 @@ ledgr/
 │       │   ├── transactions/# Transaction views (Daily, Calendar, Monthly, Search, Add)
 │       │   └── ui/          # Shared UI primitives (SettingCard)
 │       ├── hooks/           # Custom React hooks (useSettings, useMonth)
-│       ├── lib/             # API client, utilities, constants
+│       ├── lib/             # API client, icons, currency helpers, constants
 │       ├── pages/           # Page-level components (Transactions, Stats, Accounts, Settings)
+│       ├── styles/          # Global styles (Tailwind)
 │       └── types/           # Shared TypeScript interfaces
 ├── server/                  # Express REST API
 │   └── src/
 │       ├── controllers/     # Route handler logic
 │       ├── db/              # MySQL connection and schema
-│       ├── middleware/      # Request validation (Zod)
+│       ├── middleware/      # Request validation (Zod) and error handling
 │       └── routes/          # Express route definitions
 ├── docker-compose.yml       # MySQL service
 └── package.json             # Workspace root
@@ -97,7 +98,7 @@ ledgr/
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v18 or later
+- [Node.js](https://nodejs.org/) v20.19+ or v22.13+ (v24 LTS recommended)
 - [Docker](https://www.docker.com/) (for the MySQL database)
 - npm v8 or later (workspaces support)
 
@@ -118,7 +119,15 @@ cd ledgr
 npm install
 ```
 
-### 3. Start the database
+### 3. Configure environment variables
+
+```bash
+cp server/.env.example server/.env
+```
+
+The defaults match the Docker Compose database, so no edits are needed for local development. See [Environment Variables](#environment-variables).
+
+### 4. Start the database
 
 ```bash
 docker compose up -d
@@ -126,13 +135,15 @@ docker compose up -d
 
 The MySQL container initialises on first start using `server/src/db/schema.sql`, which creates all tables and seeds default data automatically.
 
-### 4. Start the development servers
+> If you already run MySQL locally on port 3306, the container cannot bind the port. Either stop the local server, or create the `ledgr` database and user on it and apply `server/src/db/schema.sql` manually.
+
+### 5. Start the development servers
 
 ```bash
 npm run dev
 ```
 
-This starts both the client (port **5173**) and server (port **3000**) concurrently.
+This starts both the client (port **5173**) and server (port **3001**) concurrently. The Vite dev server proxies `/api/*` requests to the API server.
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
@@ -149,20 +160,31 @@ Run from the project root:
 | `npm run lint`      | Lint both workspaces                              |
 | `npm run typecheck` | Run TypeScript type checks across both workspaces |
 
+### Running a production build
+
+```bash
+npm run build
+npm start --workspace=server            # API on port 3001
+npm run preview --workspace=client      # serves client/dist on port 4173
+```
+
+`vite preview` is for checking the build locally. In a real deployment, serve `client/dist` from a static host or reverse proxy that forwards `/api/*` to the API server with the `/api` prefix stripped.
+
 ---
 
 ## Environment Variables
 
-The server reads the following variables. Create a `.env` file inside `server/` if overriding the defaults.
+The server reads the following variables from `server/.env` (see `server/.env.example`).
 
-| Variable  | Default          | Description         |
-| --------- | ---------------- | ------------------- |
-| `PORT`    | `3000`           | Express server port |
-| `DB_HOST` | `127.0.0.1`      | MySQL host          |
-| `DB_PORT` | `3306`           | MySQL port          |
-| `DB_NAME` | `ledgr`          | Database name       |
-| `DB_USER` | `ledgr`          | Database user       |
-| `DB_PASS` | `ledgr_password` | Database password   |
+| Variable      | Default                 | Description         |
+| ------------- | ----------------------- | ------------------- |
+| `PORT`        | `3001`                  | Express server port |
+| `CLIENT_URL`  | `http://localhost:5173` | Allowed CORS origin |
+| `DB_HOST`     | `localhost`             | MySQL host          |
+| `DB_PORT`     | `3306`                  | MySQL port          |
+| `DB_NAME`     | `ledgr`                 | Database name       |
+| `DB_USER`     | `ledgr`                 | Database user       |
+| `DB_PASSWORD` | `ledgr_password`        | Database password   |
 
 ---
 
@@ -181,7 +203,7 @@ docker compose up -d     # re-creates with fresh schema and seed data
 
 ## API Overview
 
-All endpoints are prefixed with `/api`.
+The client calls the API under `/api`; the proxy strips that prefix, so the Express server itself serves these routes without it (e.g. `GET http://localhost:3001/transactions`).
 
 | Method | Path                                             | Description                           |
 | ------ | ------------------------------------------------ | ------------------------------------- |
